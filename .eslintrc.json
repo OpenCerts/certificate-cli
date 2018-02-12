@@ -25,6 +25,7 @@
         "argsIgnorePattern": "^_"
       }
     ],
+    "no-underscore-dangle":"warn",
     "no-bitwise":"warn",
     "no-param-reassign": "warn",
     "prettier/prettier": "error",
