@@ -94,8 +94,17 @@ function certificateDecorator(certificate){
     }
   }
 
+  function generateIssuerIdentity(){
+    return {
+      id:'urn:uuid:'+faker.random.uuid(),
+      url:faker.internet.url(),
+      email:faker.internet.email()
+    }
+  }
+
   certificate.badge.name = faker.random.alphaNumeric(25);
   certificate.badge.criteria = faker.random.alphaNumeric(80);
+  certificate.badge.issuer = generateIssuerIdentity();
 
   const evidence = generateEvidence();
   if(evidence) certificate.badge.evidence = evidence;
