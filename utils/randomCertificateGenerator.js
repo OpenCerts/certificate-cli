@@ -1,6 +1,7 @@
 const fs = require("fs");
 const faker = require("faker");
 const crypto = require("crypto");
+const mkdirp = require("mkdirp");
 const { sha3 } = require("ethereumjs-util");
 
 // Generate recipient based on
@@ -159,6 +160,8 @@ function randomCertificate() {
 }
 
 function generateRandomCertificate(num, dir) {
+  mkdirp.sync(dir);
+
   for (let i = 0; i < num; i += 1) {
     const cert = randomCertificate();
     const certId = cert.id;
