@@ -79,11 +79,9 @@ function MerkleTree(_elements) {
   this.layers = getLayers(this.elements);
 }
 
-MerkleTree.prototype.getRoot = function() {
-  return this.layers[this.layers.length - 1][0];
-};
+MerkleTree.prototype.getRoot = () => this.layers[this.layers.length - 1][0];
 
-MerkleTree.prototype.getProof = function(_element) {
+MerkleTree.prototype.getProof = _element => {
   const element = toBuffer(_element);
 
   const index = getBufIndex(element, this.elements);
@@ -93,7 +91,7 @@ MerkleTree.prototype.getProof = function(_element) {
   return getProof(index, this.layers);
 };
 
-const checkProof = function(_proof, _root, _element) {
+const checkProof = (_proof, _root, _element) => {
   const proof = _proof.map(step => hashToBuffer(step));
   const root = hashToBuffer(_root);
   const element = hashToBuffer(_element);

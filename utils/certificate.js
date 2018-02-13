@@ -94,12 +94,8 @@ function verifyCertificate(certificate) {
   return true;
 }
 
-Certificate.prototype.getRoot = function() {
-  return this.certificateTree.getRoot();
-};
+Certificate.prototype.getRoot = () => this.certificateTree.getRoot();
 
-Certificate.prototype.verify = function() {
-  return verifyCertificate(this.certificate);
-};
+Certificate.prototype.verify = () => verifyCertificate(this.certificate);
 
 module.exports = Certificate;
