@@ -2,14 +2,14 @@
 const fs = require("fs");
 const program = require("commander");
 
-const batchIssue = require("./utils/batchIssue");
-const Certificate = require("./utils/certificate");
-const CertificateStore = require("./utils/contract/certificateStore.js");
+const batchIssue = require("./src/batchIssue");
+const Certificate = require("./src/certificate");
+const CertificateStore = require("./src/contract/certificateStore.js");
 const { logger, addConsole } = require("./lib/logger");
 const {
   generateRandomCertificate,
   randomCertificate
-} = require("./utils/randomCertificateGenerator");
+} = require("./src/randomCertificateGenerator");
 
 const parseArguments = argv => {
   program

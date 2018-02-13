@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js test ",
+    "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js'",
     "lint": "eslint . --ext .js --max-warnings 0",
     "lint:fix": "eslint . --ext .js --fix"
   },
@@ -32,8 +32,8 @@
     "ethereumjs-util": "^5.1.2",
     "faker": "^4.1.0",
     "lodash": "^4.17.5",
+    "truffle-contract": "^3.0.3",
     "web3": "^1.0.0-beta.29",
-    "winston": "^3.0.0-rc1",
-    "truffle-contract": "^3.0.3"
+    "winston": "^3.0.0-rc1"
   }
 }
