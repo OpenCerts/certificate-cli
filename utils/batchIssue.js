@@ -1,4 +1,6 @@
 const fs = require("fs");
+const mkdirp = require("mkdirp");
+
 const { issueCertificates } = require("./certificateBatch");
 const Certificate = require("./certificate");
 
@@ -19,6 +21,8 @@ function batchIssue(inputDir, outputDir) {
   return getRawCertificates(inputDir).then(certificates => {
     const batch = issueCertificates(certificates);
     const batchRoot = batch.getRoot().toString("hex");
+
+    mkdirp.sync(outputDir);
 
     certificates.forEach(c => {
       const proof = batch.getProof(c).map(p => p.toString("hex"));

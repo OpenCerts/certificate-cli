@@ -61,12 +61,13 @@ const main = argv => {
 
       logger.info("Certificate's signature is valid!\n");
 
-      logger.info(
+      logger.warn(
         "Warning: Please verify this certificate on the blockchain with the issuer's certificate store.\n"
       );
     } catch (e) {
-      logger.info("Certificate's signature is invalid!");
-      logger.info(`Reason: ${e.message}\n`);
+      logger.error("Certificate's signature is invalid!");
+      logger.error(`Reason: ${e.message}\n`);
+      logger.debug(e, { json: true });
     }
 
     logger.info(
