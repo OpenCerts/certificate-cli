@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html mocha -- ./test/helpers.js test",
+    "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js test ",
     "lint": "eslint . --ext .js --max-warnings 0",
     "lint:fix": "eslint . --ext .js --fix"
   },
