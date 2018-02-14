@@ -93,13 +93,13 @@ CertificateStore.prototype.revokeClaim = function _revokeClaim(
 };
 
 CertificateStore.prototype.deployStore = function _deployStore(
-  name,
-  verificationUrl
+  verificationUrl,
+  name
 ) {
   return this.contract
     .deploy({
       data: bytecode,
-      arguments: [name, verificationUrl]
+      arguments: [verificationUrl, name]
     })
     .send({ from: this.account, gas: this.gas, gasPrice: this.gasPrice })
     .then(contract => {
