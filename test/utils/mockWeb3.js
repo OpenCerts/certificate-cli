@@ -1,6 +1,7 @@
 const _ = require("lodash");
+const utils = require("web3-utils");
 
-function Web3MockContractTxObject(methodName) {
+function Web3MockContractTxObject() {
   this.resolves = 0;
   this.results = null;
   this.expectedParam = null;
@@ -10,16 +11,21 @@ function Web3MockContractTxObject(methodName) {
 // Sets the resolved value for this method.
 // When `resolves` === true, the method resolves, otherwise it is rejected
 // Value from results will be returns in resolve or reject
-Web3MockContractTxObject.prototype.setResult = function(resolves, results) {
+Web3MockContractTxObject.prototype.setResult = function setResult(
+  resolves,
+  results
+) {
   this.resolves = resolves;
   this.results = results;
 };
 
-Web3MockContractTxObject.prototype.expectParams = function(...args) {
+Web3MockContractTxObject.prototype.expectParams = function expectParams(
+  ...args
+) {
   this.expectedParam = args;
 };
 
-Web3MockContractTxObject.prototype.argumentCheck = function() {
+Web3MockContractTxObject.prototype.argumentCheck = function argumentCheck() {
   if (this.expectedParam && !_.isEqual(this.passedParams, this.expectedParam)) {
     throw new Error(`Argument mismatch
       Expected: ${this.expectedParam}
@@ -27,7 +33,7 @@ Web3MockContractTxObject.prototype.argumentCheck = function() {
   }
 };
 
-Web3MockContractTxObject.prototype.call = function() {
+Web3MockContractTxObject.prototype.call = function call() {
   this.argumentCheck();
 
   return this.resolves
@@ -35,7 +41,7 @@ Web3MockContractTxObject.prototype.call = function() {
     : Promise.reject(this.results);
 };
 
-Web3MockContractTxObject.prototype.send = function() {
+Web3MockContractTxObject.prototype.send = function send() {
   this.argumentCheck();
 
   return this.resolves
@@ -43,13 +49,13 @@ Web3MockContractTxObject.prototype.send = function() {
     : Promise.reject(this.results);
 };
 
-function Web3MockContract(abi, address) {
+function Web3MockContract() {
   this.methodStore = {};
   this.expectedArguments = {};
   this.methods = {};
 }
 
-Web3MockContract.prototype.addMethod = function(methodName) {
+Web3MockContract.prototype.addMethod = function addMethod(methodName) {
   this.methodStore[methodName] = new Web3MockContractTxObject(methodName);
   this.methods[methodName] = (...args) => {
     this.methodStore[methodName].passedParams = args;
@@ -57,17 +63,12 @@ Web3MockContract.prototype.addMethod = function(methodName) {
   };
 };
 
-Web3MockContract.prototype.expectedParams = function(
-  methodName,
-  expectedParams
-) {
-  this.expectedArguments[methodName] = expectedParams;
-};
-
 function Web3Mock() {
   this.eth = {
     Contract: Web3MockContract
   };
+
+  this.utils = utils;
 }
 
 module.exports = Web3Mock;

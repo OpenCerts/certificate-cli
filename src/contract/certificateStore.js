@@ -49,12 +49,14 @@ CertificateStore.prototype.transferOwnership = function _transferOwnership(
     .send({ from: this.account })
     .then(tx => {
       const { status, transactionHash } = tx;
-      if (web3.utils.hexToNumber(status) === 0) {
+      if (web3.utils.hexToNumber(status) === 1) {
+        return tx;
+      } else if (web3.utils.hexToNumber(status) === 0) {
         return Promise.reject(
           new Error(`Transaction has failed, check tx hash: ${transactionHash}`)
         );
       }
-      return tx;
+      return Promise.reject(new Error(`Unknown transaction status: ${tx}`));
     });
 };
 
@@ -64,12 +66,14 @@ CertificateStore.prototype.issueBatch = function _issueBatch(hash) {
     .send({ from: this.account })
     .then(tx => {
       const { status, transactionHash } = tx;
-      if (web3.utils.hexToNumber(status) === 0) {
+      if (web3.utils.hexToNumber(status) === 1) {
+        return tx;
+      } else if (web3.utils.hexToNumber(status) === 0) {
         return Promise.reject(
           new Error(`Transaction has failed, check tx hash: ${transactionHash}`)
         );
       }
-      return tx;
+      return Promise.reject(new Error(`Unknown transaction status: ${tx}`));
     });
 };
 
@@ -83,12 +87,14 @@ CertificateStore.prototype.revokeClaim = function _revokeClaim(
     .send({ from: this.account })
     .then(tx => {
       const { status, transactionHash } = tx;
-      if (web3.utils.hexToNumber(status) === 0) {
+      if (web3.utils.hexToNumber(status) === 1) {
+        return tx;
+      } else if (web3.utils.hexToNumber(status) === 0) {
         return Promise.reject(
           new Error(`Transaction has failed, check tx hash: ${transactionHash}`)
         );
       }
-      return tx;
+      return Promise.reject(new Error(`Unknown transaction status: ${tx}`));
     });
 };
 

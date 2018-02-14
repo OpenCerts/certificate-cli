@@ -1,3 +1,4 @@
+/* eslint-disable no-console, no-unused-vars */
 const CertificateStore = require("./src/contract/certificateStore.js");
 
 const address0 = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57";
@@ -37,7 +38,7 @@ async function main() {
   console.log(`Transferring ownership...`);
   const tx1 = await store.transferOwnership(address1);
   console.log(`Ownership is transferred`);
-  // console.log(tx1);
+  // console.log(JSON.stringify(tx1,null,2));
   console.log();
 
   const store2 = new CertificateStore(address1, address);
@@ -45,7 +46,7 @@ async function main() {
   console.log(`Issuing certificate 2...`);
   const tx2 = await store2.issueBatch(certificate2);
   console.log(`Certificate 2 is issued`);
-  // console.log(JSON.stringify(tx2));
+  // console.log(JSON.stringify(tx2, null, 2));
   console.log();
 
   process.exit(0);
