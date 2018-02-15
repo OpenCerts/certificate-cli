@@ -5,6 +5,10 @@ const CertificateStore = proxyquire("../../../src/contract/certificateStore", {
   web3: Web3Mock
 });
 
+const {
+  bytecode
+} = require("../../../node_modules/certificate-contract/build/contracts/CertificateStore.json");
+
 const address0 = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57";
 const address1 = "0xf17f52151EbEF6C7334FAD080c5704D77216b732";
 
@@ -271,7 +275,29 @@ describe("certificateStore", () => {
     });
   });
 
-  // TBD Revoke claim, after contract is updated
+  describe("deploy", () => {
+    it("should deploy a copy of contract", () => {
+      const store = new CertificateStore(address0, contract0);
 
-  // TBD Deploy, after mockWeb3 is updated
+      const url = "http://tech.gov.sg";
+      const name = "GovTech DLT";
+
+      const contractAddress = "0x13274Fe19C0178208bCbee397af8167A7be27f6f";
+
+      store.contract.deploy().setResult(true, {
+        _address: contractAddress
+      });
+
+      store.contract.deploy().expectParams({
+        data: bytecode,
+        arguments: [url, name]
+      });
+
+      return store
+        .deployStore(url, name)
+        .should.eventually.deep.equal(contractAddress);
+    });
+  });
+
+  // TBD Revoke claim, after contract is updated
 });

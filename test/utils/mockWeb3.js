@@ -28,8 +28,8 @@ Web3MockContractTxObject.prototype.expectParams = function expectParams(
 Web3MockContractTxObject.prototype.argumentCheck = function argumentCheck() {
   if (this.expectedParam && !_.isEqual(this.passedParams, this.expectedParam)) {
     throw new Error(`Argument mismatch
-      Expected: ${this.expectedParam}
-      Received: ${this.passedParams}`);
+      Expected: ${JSON.stringify(this.expectedParam, null, 2)}
+      Received: ${JSON.stringify(this.passedParams, null, 2)}`);
   }
 };
 
@@ -53,10 +53,15 @@ function Web3MockContract() {
   this.methodStore = {};
   this.expectedArguments = {};
   this.methods = {};
+  this.deployFn = new Web3MockContractTxObject();
+  this.deploy = (...args) => {
+    this.deployFn.passedParams = args;
+    return this.deployFn;
+  };
 }
 
 Web3MockContract.prototype.addMethod = function addMethod(methodName) {
-  this.methodStore[methodName] = new Web3MockContractTxObject(methodName);
+  this.methodStore[methodName] = new Web3MockContractTxObject();
   this.methods[methodName] = (...args) => {
     this.methodStore[methodName].passedParams = args;
     return this.methodStore[methodName];
