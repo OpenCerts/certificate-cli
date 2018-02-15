@@ -1,4 +1,8 @@
 /* eslint-disable no-console, no-unused-vars */
+
+// Run ganache with the following mnemonic to run this script
+// candy maple cake sugar pudding cream honey rich smooth crumble sweet treat
+
 const CertificateStore = require("../src/contract/certificateStore.js");
 
 const address0 = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57";
