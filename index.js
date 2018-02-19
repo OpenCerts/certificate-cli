@@ -130,99 +130,64 @@ const parseArguments = argv =>
     .parse(argv);
 
 const generate = (dir, count, contractAddress) => {
-  logger.info(
-    "========================== Generating random certificate =========================="
-  );
   mkdirp.sync(dir);
   const generated = generateRandomCertificate(count, dir, contractAddress);
   logger.info(`Generated ${generated} certificates.`);
-  logger.info(
-    "==================================================================================="
-  );
+  return count;
 };
 
 const batch = async (raw, batched) => {
-  logger.info(
-    "============================== Batching certificates =============================="
-  );
-
   mkdirp.sync(batched);
-  await batchIssue(raw, batched).then(merkleRoot => {
-    logger.info(`Batch Certificate Root:\n${merkleRoot}`);
-    logger.info(
-      "==================================================================================="
-    );
+  return batchIssue(raw, batched).then(merkleRoot => {
+    logger.info(`Batch Certificate Root: 0x${merkleRoot}`);
+    return `0x${merkleRoot}`;
   });
 };
 
 const verify = file => {
-  logger.info(
-    "============================== Verifying certificate =============================="
-  );
-
   const certificateJson = JSON.parse(fs.readFileSync(file, "utf8"));
   const certificate = new Certificate(certificateJson);
 
   certificate.verify();
-
   logger.info("Certificate's signature is valid!");
-
   logger.warn(
     "Warning: Please verify this certificate on the blockchain with the issuer's certificate store."
   );
-  logger.info(
-    "==================================================================================="
-  );
+
+  return true;
 };
 
 const deploy = async (address, name, verificationUrl) => {
-  logger.info(
-    "========================== Deploying new contract store =========================="
-  );
-
   const store = new CertificateStore(address);
-  await store.deployStore(name, verificationUrl).then(deployedAddress => {
+  return store.deployStore(name, verificationUrl).then(deployedAddress => {
     logger.info(`Contract deployed at ${deployedAddress}.`);
-    logger.info(
-      "==================================================================================="
-    );
+    return deployedAddress;
   });
 };
 
 const transfer = async (originalOwner, newOwner, contractAddress) => {
-  logger.info(
-    "=================== Transfering ownership of contract store ===================="
-  );
-
   const store = new CertificateStore(originalOwner, contractAddress);
 
-  await store.transferOwnership(newOwner).then(() => {
+  return store.transferOwnership(newOwner).then(tx => {
     logger.info(
       `Contract at ${contractAddress} transfered from ${originalOwner} ` +
         `to ${newOwner}`
     );
-    logger.info(
-      "==================================================================================="
-    );
+    logger.debug(JSON.stringify(tx));
+    return tx.transactionHash;
   });
 };
 
 const commit = async (merkleRoot, issuerAddress, storeAddress) => {
-  logger.info(
-    "=================== Committing certificate on contract store ===================="
-  );
-
   const store = new CertificateStore(issuerAddress, storeAddress);
 
-  await store.issueCertificate(merkleRoot).then(() => {
+  return store.issueCertificate(merkleRoot).then(tx => {
     logger.info(
       `Certificate batch issued: ${merkleRoot}\n` +
-        `by ${issuerAddress} at certificate store ${storeAddress}`
+        `by ${issuerAddress} at certificate store ${storeAddress}\n`
     );
-    logger.info(
-      "==================================================================================="
-    );
-    process.exit(0);
+    logger.debug(JSON.stringify(tx));
+    return tx.transactionHash;
   });
 };
 
@@ -233,35 +198,32 @@ const main = async argv => {
 
   if (args._.length !== 1) {
     yargs.showHelp("log");
-  } else {
-    switch (args._[0]) {
-      case "generate":
-        generate(args.dir, args.count, args.contractAddress);
-        break;
-      case "batch":
-        await batch(args.rawDir, args.batchedDir);
-        break;
-      case "verify":
-        verify(args.file);
-        break;
-      case "deploy":
-        await deploy(args.address, args.name, args.verificationUrl);
-        break;
-      case "transfer":
-        await transfer(args.originalOwner, args.newOwner, args.contractAddress);
-        break;
-      case "commit":
-        await commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
-        break;
-      default:
-        throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
-    }
+    return false;
+  }
+  switch (args._[0]) {
+    case "generate":
+      return generate(args.dir, args.count, args.contractAddress);
+    case "batch":
+      return batch(args.rawDir, args.batchedDir);
+    case "verify":
+      return verify(args.file);
+    case "deploy":
+      return deploy(args.address, args.name, args.verificationUrl);
+    case "transfer":
+      return transfer(args.originalOwner, args.newOwner, args.contractAddress);
+    case "commit":
+      return commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
+    default:
+      throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
   }
 };
 
 if (typeof require !== "undefined" && require.main === module) {
   main(process.argv.slice(2))
-    .then(() => process.exit(0))
+    .then(value => {
+      console.log(value); // eslint-disable-line no-console
+      process.exit(0);
+    })
     .catch(err => {
       logger.error(`Error executing: ${err}`);
       if (typeof err.stack !== "undefined") {
