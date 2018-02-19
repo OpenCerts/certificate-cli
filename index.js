@@ -207,7 +207,7 @@ const commit = (merkleRoot, issuerAddress, storeAddress) => {
 
   const store = new CertificateStore(issuerAddress, storeAddress);
 
-  store.issueBatch().then(() => {
+  store.issueCertificate(merkleRoot).then(() => {
     logger.info(
       `Certificate batch issued: ${merkleRoot}\n` +
         `by ${issuerAddress} at certificate store ${storeAddress}`
@@ -250,6 +250,8 @@ const main = argv => {
         default:
           throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
       }
+
+      process.exit(0);
     } catch (e) {
       logger.error(`Error executing: ${e}`);
       // eslint-disable-next-line no-console
