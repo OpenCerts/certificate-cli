@@ -141,13 +141,13 @@ const generate = (dir, count, contractAddress) => {
   );
 };
 
-const batch = (raw, batched) => {
+const batch = async (raw, batched) => {
   logger.info(
     "============================== Batching certificates =============================="
   );
 
   mkdirp.sync(batched);
-  batchIssue(raw, batched).then(merkleRoot => {
+  await batchIssue(raw, batched).then(merkleRoot => {
     logger.info(`Batch Certificate Root:\n${merkleRoot}`);
     logger.info(
       "==================================================================================="
@@ -239,7 +239,7 @@ const main = async argv => {
         generate(args.dir, args.count, args.contractAddress);
         break;
       case "batch":
-        batch(args.rawDir, args.batchedDir);
+        await batch(args.rawDir, args.batchedDir);
         break;
       case "verify":
         verify(args.file);
@@ -264,8 +264,10 @@ if (typeof require !== "undefined" && require.main === module) {
     .then(() => process.exit(0))
     .catch(err => {
       logger.error(`Error executing: ${err}`);
-      // eslint-disable-next-line no-console
-      console.log(err); // ??? how to do this without console.log?
+      if (typeof err.stack !== "undefined") {
+        logger.debug(err.stack);
+      }
+      logger.debug(JSON.stringify(err));
       process.exit(1);
     });
 }
