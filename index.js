@@ -168,13 +168,13 @@ const verify = file => {
   );
 };
 
-const deploy = (address, name, verificationUrl) => {
+const deploy = async (address, name, verificationUrl) => {
   logger.info(
     "========================== Deploying new contract store =========================="
   );
 
   const store = new CertificateStore(address);
-  store.deployStore(name, verificationUrl).then(deployedAddress => {
+  await store.deployStore(name, verificationUrl).then(deployedAddress => {
     logger.info(`Contract deployed at ${deployedAddress}.`);
     logger.info(
       "==================================================================================="
@@ -182,14 +182,14 @@ const deploy = (address, name, verificationUrl) => {
   });
 };
 
-const transfer = (originalOwner, newOwner, contractAddress) => {
+const transfer = async (originalOwner, newOwner, contractAddress) => {
   logger.info(
     "=================== Transfering ownership of contract store ===================="
   );
 
   const store = new CertificateStore(originalOwner, contractAddress);
 
-  store.transferOwnership(newOwner).then(() => {
+  await store.transferOwnership(newOwner).then(() => {
     logger.info(
       `Contract at ${contractAddress} transfered from ${originalOwner} ` +
         `to ${newOwner}`
@@ -200,14 +200,14 @@ const transfer = (originalOwner, newOwner, contractAddress) => {
   });
 };
 
-const commit = (merkleRoot, issuerAddress, storeAddress) => {
+const commit = async (merkleRoot, issuerAddress, storeAddress) => {
   logger.info(
     "=================== Committing certificate on contract store ===================="
   );
 
   const store = new CertificateStore(issuerAddress, storeAddress);
 
-  store.issueCertificate(merkleRoot).then(() => {
+  await store.issueCertificate(merkleRoot).then(() => {
     logger.info(
       `Certificate batch issued: ${merkleRoot}\n` +
         `by ${issuerAddress} at certificate store ${storeAddress}`
@@ -219,7 +219,7 @@ const commit = (merkleRoot, issuerAddress, storeAddress) => {
   });
 };
 
-const main = argv => {
+const main = async argv => {
   const args = parseArguments(argv);
   addConsole(args.logLevel);
   logger.debug(`Parsed args: ${JSON.stringify(args)}`);
@@ -227,42 +227,40 @@ const main = argv => {
   if (args._.length !== 1) {
     yargs.showHelp("log");
   } else {
-    try {
-      switch (args._[0]) {
-        case "generate":
-          generate(args.dir, args.count);
-          break;
-        case "batch":
-          batch(args.rawDir, args.batchedDir);
-          break;
-        case "verify":
-          verify(args.file);
-          break;
-        case "deploy":
-          deploy(args.address, args.name, args.verificationUrl);
-          break;
-        case "transfer":
-          transfer(args.originalOwner, args.newOwner, args.contractAddress);
-          break;
-        case "commit":
-          commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
-          break;
-        default:
-          throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
-      }
-
-      process.exit(0);
-    } catch (e) {
-      logger.error(`Error executing: ${e}`);
-      // eslint-disable-next-line no-console
-      console.log(e); // ??? how to do this without console.log?
-      process.exit(1);
+    switch (args._[0]) {
+      case "generate":
+        generate(args.dir, args.count);
+        break;
+      case "batch":
+        batch(args.rawDir, args.batchedDir);
+        break;
+      case "verify":
+        verify(args.file);
+        break;
+      case "deploy":
+        await deploy(args.address, args.name, args.verificationUrl);
+        break;
+      case "transfer":
+        await transfer(args.originalOwner, args.newOwner, args.contractAddress);
+        break;
+      case "commit":
+        await commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
+        break;
+      default:
+        throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
     }
   }
 };
 
 if (typeof require !== "undefined" && require.main === module) {
-  main(process.argv.slice(2));
+  main(process.argv.slice(2))
+    .then(() => process.exit(0))
+    .catch(err => {
+      logger.error(`Error executing: ${err}`);
+      // eslint-disable-next-line no-console
+      console.log(err); // ??? how to do this without console.log?
+      process.exit(1);
+    });
 }
 
 module.exports = {
