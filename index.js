@@ -58,6 +58,13 @@ const parseArguments = argv =>
               coerce: parseInt
             }
           })
+          .option({
+            "contract-address": {
+              default: "0x0",
+              description: "Address of the certificate store contract",
+              string: true
+            }
+          })
     })
     .command({
       command: "deploy <address> <name> <verificationUrl>",
@@ -122,12 +129,12 @@ const parseArguments = argv =>
     })
     .parse(argv);
 
-const generate = (dir, count) => {
+const generate = (dir, count, contractAddress) => {
   logger.info(
     "========================== Generating random certificate =========================="
   );
   mkdirp.sync(dir);
-  const generated = generateRandomCertificate(count, dir);
+  const generated = generateRandomCertificate(count, dir, contractAddress);
   logger.info(`Generated ${generated} certificates.`);
   logger.info(
     "==================================================================================="
@@ -229,7 +236,7 @@ const main = async argv => {
   } else {
     switch (args._[0]) {
       case "generate":
-        generate(args.dir, args.count);
+        generate(args.dir, args.count, args.contractAddress);
         break;
       case "batch":
         batch(args.rawDir, args.batchedDir);
