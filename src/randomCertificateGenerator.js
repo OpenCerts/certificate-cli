@@ -140,7 +140,7 @@ function randomCertificate(contractAddress) {
     },
     verification: {
       type: "ETHStoreProof",
-      contractAddress: contractAddress
+      contractAddress
     }
   };
 
