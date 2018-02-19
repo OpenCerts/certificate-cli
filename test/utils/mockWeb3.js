@@ -6,8 +6,6 @@ function Web3MockContractTxObject() {
   this.results = null;
   this.expectedParam = null;
   this.passedParams = null;
-  this.gasEstimate = 0;
-  this.expectedOpts = null;
 }
 
 // Sets the resolved value for this method.

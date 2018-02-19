@@ -23,7 +23,6 @@ async function main() {
   console.log(`New contract deployed at ${address}`);
   console.log();
 
-  /*
   // Retrieve name and url from the store
   console.log(`Checking contract parameters...`);
   const name = await store.name();
@@ -53,7 +52,7 @@ async function main() {
   console.log(`Certificate 2 is issued`);
   // console.log(JSON.stringify(tx2, null, 2));
   console.log();
-*/
+
   process.exit(0);
 }
 

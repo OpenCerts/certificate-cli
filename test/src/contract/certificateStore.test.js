@@ -287,7 +287,6 @@ describe("certificateStore", () => {
       const contractAddress = "0x13274Fe19C0178208bCbee397af8167A7be27f6f";
 
       const espectedGas = 99999;
-
       store.contract.deploy().setResult(true, {
         _address: contractAddress
       });

@@ -588,7 +588,7 @@ center-align@^0.1.1:
 
 "certificate-contract@https://github.com/GovTechSG/certificate-contract":
   version "1.0.0"
-  resolved "https://github.com/GovTechSG/certificate-contract#e0ebfa6af0774ef1c2736e7d313c0c0c18b288f7"
+  resolved "https://github.com/GovTechSG/certificate-contract#c28c24718188fe9caa3af79364bdc337a2c6c548"
   dependencies:
     bignumber.js "^4.0.0"
     ganache-cli "^6.0.3"
