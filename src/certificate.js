@@ -65,11 +65,19 @@ function certificateTree(certificate, evidences) {
 function Certificate(certificate) {
   this.certificate = certificate;
 
-  this.buildTree();
+  // Build an evidence tree if either evidence or private evidence is present
+  if (
+    this.certificate.badge.evidence ||
+    this.certificate.badge.privateEvidence
+  ) {
+    this.evidenceTree = evidenceTree(this.certificate);
+    this.evidenceRoot = this.evidenceTree.getRoot().toString("hex");
+  }
+
+  this.certificateTree = certificateTree(this.certificate, this.evidenceTree);
 }
 
 Certificate.prototype.buildTree = function _buildTree() {
-  // Build an evidence tree if either evidence or private evidence is present
   if (
     this.certificate.badge.evidence ||
     this.certificate.badge.privateEvidence
