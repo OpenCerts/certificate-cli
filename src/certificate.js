@@ -110,18 +110,6 @@ function verifyCertificate(certificate) {
   return true;
 }
 
-Certificate.prototype.buildTree = function _buildTree() {
-  if (
-    this.certificate.badge.evidence ||
-    this.certificate.badge.privateEvidence
-  ) {
-    this.evidenceTree = evidenceTree(this.certificate);
-    this.evidenceRoot = this.evidenceTree.getRoot().toString("hex");
-  }
-
-  this.certificateTree = certificateTree(this.certificate, this.evidenceTree);
-};
-
 Certificate.prototype.privacyFilter = function _privacyFilter(fields) {
   const filteredCertificate = _.cloneDeep(this.certificate);
 
