@@ -117,8 +117,7 @@ describe("certificate", () => {
                 courseCredit: "UDIFMCJSPD:4.00",
                 courseCode: "EPDUSJCNZL:EN1101E"
               },
-              ,
-              // Sparse array to simulate entirely redacted item in transcript
+              {},
               {
                 name: "PAJSUDJCHS:EINSTEIN's UNIVERSE & QUANTUM WEIRDNESS",
                 grade: "IWUEJDKZMS:C+",
@@ -238,72 +237,80 @@ describe("certificate", () => {
         const cert = new Certificate(rawCertificate);
         const originalRoot = cert.getRoot().toString("hex");
 
-        cert.privacyFilter("transcript.1.name");
+        const filteredCert = cert.privacyFilter("transcript.1.name");
+        const newRoot = filteredCert.getRoot().toString("hex");
 
-        const newRoot = cert.getRoot().toString("hex");
-
-        expect(cert.getCertificate().badge.evidence.transcript[1].name).to.be
-          .undefined;
-        expect(cert.getCertificate().badge.privateEvidence.length).to.eql(
-          1,
-          "Incorrect number of private evidences"
-        );
+        expect(filteredCert.getCertificate().badge.evidence.transcript[1].name)
+          .to.be.undefined;
+        expect(
+          filteredCert.getCertificate().badge.privateEvidence.length
+        ).to.eql(1, "Incorrect number of private evidences");
         expect(originalRoot).to.eql(newRoot, "Certificate has been changed");
-        expect(cert.verify()).to.eql(true, "Certificate signature is corrupt");
+        expect(filteredCert.verify()).to.eql(
+          true,
+          "Certificate signature is corrupt"
+        );
       });
 
       it("can remove key/value from array", () => {
         const cert = new Certificate(rawCertificate);
         const originalRoot = cert.getRoot().toString("hex");
 
-        cert.privacyFilter(["transcript.2.name"]);
+        const filteredCert = cert.privacyFilter(["transcript.2.name"]);
+        const newRoot = filteredCert.getRoot().toString("hex");
 
-        const newRoot = cert.getRoot().toString("hex");
-
-        expect(cert.getCertificate().badge.evidence.transcript[2].name).to.be
-          .undefined;
-        expect(cert.getCertificate().badge.privateEvidence.length).to.eql(
-          1,
-          "Incorrect number of private evidences"
-        );
+        expect(filteredCert.getCertificate().badge.evidence.transcript[2].name)
+          .to.be.undefined;
+        expect(
+          filteredCert.getCertificate().badge.privateEvidence.length
+        ).to.eql(1, "Incorrect number of private evidences");
         expect(originalRoot).to.eql(newRoot, "Certificate has been changed");
-        expect(cert.verify()).to.eql(true, "Certificate signature is corrupt");
+        expect(filteredCert.verify()).to.eql(
+          true,
+          "Certificate signature is corrupt"
+        );
       });
 
       it("can remove entire object from array", () => {
         const cert = new Certificate(rawCertificate);
         const originalRoot = cert.getRoot().toString("hex");
 
-        cert.privacyFilter([
+        const filteredCert = cert.privacyFilter([
           "transcript.1.name",
           "transcript.1.grade",
           "transcript.1.courseCredit",
           "transcript.1.courseCode"
         ]);
+        const newRoot = filteredCert.getRoot().toString("hex");
 
-        const newRoot = cert.getRoot().toString("hex");
-
-        expect(cert.getCertificate().badge.evidence.transcript[1]).to.be
-          .undefined;
-        expect(cert.getCertificate().badge.privateEvidence.length).to.eql(
-          4,
-          "Incorrect number of private evidences"
-        );
+        expect(
+          filteredCert.getCertificate().badge.evidence.transcript[1]
+        ).to.eql({});
+        expect(
+          filteredCert.getCertificate().badge.privateEvidence.length
+        ).to.eql(4, "Incorrect number of private evidences");
         expect(originalRoot).to.eql(newRoot, "Certificate has been changed");
-        expect(cert.verify()).to.eql(true, "Certificate signature is corrupt");
+        expect(filteredCert.verify()).to.eql(
+          true,
+          "Certificate signature is corrupt"
+        );
       });
 
       it("does nothing for unpresent fields", () => {
         const cert = new Certificate(rawCertificate);
         const originalRoot = cert.getRoot().toString("hex");
 
-        cert.privacyFilter("transcript.1.invalidField");
+        const filteredCert = cert.privacyFilter("transcript.1.invalidField");
 
-        const newRoot = cert.getRoot().toString("hex");
+        const newRoot = filteredCert.getRoot().toString("hex");
 
-        expect(cert.getCertificate().badge.privateEvidence).to.be.undefined;
+        expect(filteredCert.getCertificate().badge.privateEvidence).to.be
+          .undefined;
         expect(originalRoot).to.eql(newRoot, "Certificate has been changed");
-        expect(cert.verify()).to.eql(true, "Certificate signature is corrupt");
+        expect(filteredCert.verify()).to.eql(
+          true,
+          "Certificate signature is corrupt"
+        );
       });
     });
   });

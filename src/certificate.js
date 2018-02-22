@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { MerkleTree, checkProof } = require("./merkle");
 const { hashToBuffer, toBuffer } = require("./utils");
-const { flatten, unflatten } = require("flat");
+const { flatten } = require("flat");
 
 function evidenceTree(certificate) {
   const { evidence, privateEvidence } = certificate.badge;
@@ -10,7 +10,9 @@ function evidenceTree(certificate) {
 
   // Flatten visible evidencee and hash each of them
   if (evidence) {
-    const flattenedEvidence = flatten(evidence);
+    let flattenedEvidence = flatten(evidence);
+
+    flattenedEvidence = _.omitBy(flattenedEvidence, _.isEmpty);
 
     const hashedEvidences = Object.keys(flattenedEvidence).map(k => {
       const obj = {};
@@ -77,18 +79,6 @@ function Certificate(certificate) {
   this.certificateTree = certificateTree(this.certificate, this.evidenceTree);
 }
 
-Certificate.prototype.buildTree = function _buildTree() {
-  if (
-    this.certificate.badge.evidence ||
-    this.certificate.badge.privateEvidence
-  ) {
-    this.evidenceTree = evidenceTree(this.certificate);
-    this.evidenceRoot = this.evidenceTree.getRoot().toString("hex");
-  }
-
-  this.certificateTree = certificateTree(this.certificate, this.evidenceTree);
-};
-
 function verifyCertificate(certificate) {
   // Checks the signature of the certificate
   if (!certificate.signature)
@@ -120,33 +110,40 @@ function verifyCertificate(certificate) {
   return true;
 }
 
-Certificate.prototype.privacyFilter = function _privacyFilter(fields) {
-  this.certificate = _.cloneDeep(this.certificate);
+Certificate.prototype.buildTree = function _buildTree() {
+  if (
+    this.certificate.badge.evidence ||
+    this.certificate.badge.privateEvidence
+  ) {
+    this.evidenceTree = evidenceTree(this.certificate);
+    this.evidenceRoot = this.evidenceTree.getRoot().toString("hex");
+  }
 
-  const { evidence, privateEvidence } = this.certificate.badge;
-  const { type, saltLength } = this.certificate.badge.evidencePrivacyFilter;
+  this.certificateTree = certificateTree(this.certificate, this.evidenceTree);
+};
+
+Certificate.prototype.privacyFilter = function _privacyFilter(fields) {
+  const filteredCertificate = _.cloneDeep(this.certificate);
+
+  const { evidence, privateEvidence } = filteredCertificate.badge;
+  const { type, saltLength } = filteredCertificate.badge.evidencePrivacyFilter;
   if (!type) throw new Error("Privacy filter algorithm cannot be found");
   if (!saltLength) throw new Error("Privacy salt length cannot be found");
   if (type !== "SaltedProof") throw new Error("Unsupported privacy filter");
 
-  const valueToRemove = fields instanceof Array ? fields : [fields];
+  const valuesToRemove = fields instanceof Array ? fields : [fields];
 
-  const flattenedEvidence = flatten(evidence);
-  const privateEvidences = {};
-
-  valueToRemove.forEach(f => {
-    if (f in flattenedEvidence) {
-      privateEvidences[f] = flattenedEvidence[f];
-      delete flattenedEvidence[f];
-    }
-  });
-
-  const unflattenedEvidences = unflatten(flattenedEvidence);
-
+  // Pick out the evidence we want to privatise
+  const privateEvidences = flatten(_.pick(evidence, valuesToRemove));
   const hashedEvidences = Object.keys(privateEvidences).map(k => {
     const obj = {};
     obj[k] = privateEvidences[k];
     return toBuffer(obj).toString("hex");
+  });
+
+  // Unset the privatised evidence fields
+  valuesToRemove.forEach(path => {
+    _.unset(evidence, path);
   });
 
   let mergedEvidence = [];
@@ -154,12 +151,12 @@ Certificate.prototype.privacyFilter = function _privacyFilter(fields) {
   if (privateEvidence) mergedEvidence = mergedEvidence.concat(privateEvidence);
   if (hashedEvidences) mergedEvidence = mergedEvidence.concat(hashedEvidences);
 
-  this.certificate.badge.evidence = unflattenedEvidences;
+  filteredCertificate.badge.evidence = evidence;
   if (mergedEvidence.length > 0) {
-    this.certificate.badge.privateEvidence = mergedEvidence;
+    filteredCertificate.badge.privateEvidence = mergedEvidence;
   }
 
-  this.buildTree();
+  return new Certificate(filteredCertificate);
 };
 
 Certificate.prototype.getRoot = function _getRoot() {
