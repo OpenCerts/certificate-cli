@@ -79,35 +79,53 @@ function Certificate(certificate) {
   this.certificateTree = certificateTree(this.certificate, this.evidenceTree);
 }
 
+class CertificateValidationError extends Error {
+  constructor(...args) {
+      super(...args)
+      Error.captureStackTrace(this, CertificateValidationError)
+      this.validationFailures = [];
+    }
+}
+
 function verifyCertificate(certificate) {
+  validationFailures = []
   // Checks the signature of the certificate
-  if (!certificate.signature)
-    throw new Error("Certificate does not have a signature");
+  if (!certificate.signature) {
+    validationFailures.push(new Error("Certificate does not have a signature"));
+    
+    err = new CertificateValidationError(); err.validationFailures = validationFailures; throw err
+  }
   if (certificate.signature.type !== "SHA3MerkleProof")
-    throw new Error("Signature algorithm is not supported");
+    validationFailures.push(new Error("Signature algorithm is not supported"));
   if (!certificate.signature.targetHash)
-    throw new Error("Certificate does not have a targetHash");
+    validationFailures.push(new Error("Certificate does not have a targetHash"));
   if (!certificate.signature.merkleRoot)
-    throw new Error("Certificate does not have a merkleRoot");
+    validationFailures.push(new Error("Certificate does not have a merkleRoot"));
 
   const generatedCertificate = new Certificate(certificate);
   const targetHash = generatedCertificate.getRoot().toString("hex");
 
   // Check the target hash of the certificate matches the signature's target hash
   if (targetHash !== certificate.signature.targetHash)
-    throw new Error("Certificate hash does not match signature's targetHash");
+    validationFailures.push(new Error("Certificate hash does not match signature's targetHash"));
 
   // Check if target hash resolves to merkle root
-  if (
-    !checkProof(
-      certificate.signature.proof,
-      certificate.signature.merkleRoot,
-      certificate.signature.targetHash
-    )
-  )
-    throw new Error("Certificate proof is invalid for merkle root");
+  try {
+    if (
+      !checkProof(
+        certificate.signature.proof,
+        certificate.signature.merkleRoot,
+        certificate.signature.targetHash
+      )
+    ) {
+      validationFailures.push(new Error("Certificate proof is invalid for merkle root"));
+    }
+  } catch (_error) {
+    validationFailures.push(new Error("Certificate proof is invalid for merkle root"));
+  }
 
-  return true;
+  if (validationFailures.length > 0) { err = new CertificateValidationError(); err.validationFailures = validationFailures; throw err }
+  else { return true; }
 }
 
 Certificate.prototype.privacyFilter = function _privacyFilter(fields) {

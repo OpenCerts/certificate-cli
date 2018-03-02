@@ -232,6 +232,60 @@ describe("certificate", () => {
       );
     });
 
+    describe.only("verifyCertificate", () => {
+      it("should not fail if there are not any errors", () => {
+        const validCert = new Certificate(rawCertificate)  
+        expect(validCert.verify()).to.eql(true)
+      })
+      it("should fail if the certificate does not have a signature", () => {
+        let invalidRawCert = Object.assign({}, rawCertificate)
+        delete invalidRawCert.signature
+
+        const invalidCert = new Certificate(invalidRawCert)
+        try {
+          invalidCert.verify()
+          throw new Error('forcing catch to execute in case .verify() does not throw')
+        } catch (_error) {
+          expect(_error).have.property('validationFailures')
+          expect(_error.validationFailures).to.have.length('1')
+          expect(_error.validationFailures[0].message).to.eql('Certificate does not have a signature')
+        }
+      })
+      it("should fail if the signature algorithm is not supported", () => {
+        let invalidRawCert = Object.assign({}, rawCertificate)
+        invalidRawCert.signature.type = "gibberish"
+
+        const invalidCert = new Certificate(invalidRawCert)
+        try {
+          invalidCert.verify()
+          throw new Error('forcing catch to execute in case .verify() does not throw')
+        } catch (_error) {
+          expect(_error).have.property('validationFailures')
+          expect(_error.validationFailures).to.have.length('1')
+          expect(_error.validationFailures[0].message).to.eql('Signature algorithm is not supported')
+        }     
+      })
+      it("should fail if the certificate does not have a targetHash", () => {
+        let invalidRawCert = Object.assign({}, rawCertificate)
+        delete invalidRawCert.signature.targetHash
+
+        const invalidCert = new Certificate(invalidRawCert)
+        try {
+          invalidCert.verify()
+          throw new Error('forcing catch to execute in case .verify() does not throw')
+        } catch (_error) {
+          console.log(_error)
+          expect(_error).have.property('validationFailures')
+          expect(_error.validationFailures).to.have.length('1')
+          expect(_error.validationFailures[0].message).to.eql('Signature algorithm is not supported')
+        } 
+      })
+      it("should fail if the certificate does not have a merkleRoot", () => {})
+      it("should fail if the certificate hash does not match the signature targetHash", () => {})
+      it("should fail if the certificate proof is invalid for merkle root", () => {})
+      it("should support multiple verification failures", () => {})
+    });
+
     describe("privacyFilter", () => {
       it("can remove one key/value from array", () => {
         const cert = new Certificate(rawCertificate);
