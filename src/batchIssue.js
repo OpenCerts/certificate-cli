@@ -1,6 +1,8 @@
 const fs = require("fs");
-const { issueCertificates } = require("./certificateBatch");
-const Certificate = require("./certificate");
+const {
+  Certificate,
+  issueCertificates
+} = require("@govtechsg/open-certificate");
 
 function batchIssue(inputDir, outputDir) {
   function getRawCertificates(path) {

@@ -2,14 +2,13 @@
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const yargs = require("yargs");
+const { Certificate } = require("@govtechsg/open-certificate");
 
 const batchIssue = require("./src/batchIssue");
-const Certificate = require("./src/certificate");
 const CertificateStore = require("./src/contract/certificateStore.js");
 const { logger, addConsole } = require("./lib/logger");
 const {
-  generateRandomCertificate,
-  randomCertificate
+  generateRandomCertificate
 } = require("./src/randomCertificateGenerator");
 
 // Pass argv with $1 and $2 sliced
@@ -173,8 +172,8 @@ const filter = (inputPath, outputPath, filters) => {
 const batch = async (raw, batched) => {
   mkdirp.sync(batched);
   return batchIssue(raw, batched).then(merkleRoot => {
-    logger.info(`Batch Certificate Root: 0x${merkleRoot}`);
-    return `0x${merkleRoot}`;
+    logger.info(`Batch Certificate Root: ${merkleRoot}`);
+    return `${merkleRoot}`;
   });
 };
 
@@ -273,10 +272,3 @@ if (typeof require !== "undefined" && require.main === module) {
       process.exit(1);
     });
 }
-
-module.exports = {
-  Certificate,
-  batchIssue,
-  generateRandomCertificate,
-  randomCertificate
-};

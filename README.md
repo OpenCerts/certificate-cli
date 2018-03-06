@@ -12,13 +12,13 @@ Generates a number of sample certificates based on the specification by open bad
 v2 with our extension.
 
 ```bash
-./index.js generate <dir> --count 20
+./index.js generate <dir> --count <CertificatesToGenerate> --contract-address <CertificateStoreContractAddress>
 ```
 
 Example:
 
 ```bash
-./index.js generate certificates/raw-certificates --count 50
+./index.js generate certificates/raw-certificates --count 50 --contract-address 0x345ca3e014aaf5dca488057592ee47305d9b3e10
 
 ========================== Generating random certificate ==========================
 
@@ -204,11 +204,11 @@ This command issues the certificate batch on the blockchain using the given cert
 Example:
 
 ```bash
-./index.js commit 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0
+./index.js commit 0x63f83f3f70bf6605f9a7490cff77824a53d91a31f524665729aea614ea0a16e4 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 0x345ca3e014aaf5dca488057592ee47305d9b3e10
 
 =================== Committing certificate on contract store ====================
 
-Certificate batch issued: 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE
+Certificate batch issued: 0x63f83f3f70bf6605f9a7490cff77824a53d91a31f524665729aea614ea0a16e4
 by 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 at contract address 0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0
 
 ===================================================================================
@@ -247,11 +247,7 @@ node examples/sample.js
 ## TBD
 
 - Test for functions in index.js
-- Refactor to allow this package to be used as a npm module
 - Checks for certificate structure when issuing certificate
-- Add support to batch issue certificate on the contract store
-- Add support to verify certificate on the contract store
-- Hiding evidences on fully visible certificates
 
 ## Test
 
