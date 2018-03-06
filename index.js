@@ -162,8 +162,8 @@ const generate = (dir, count, contractAddress) => {
 const filter = (inputPath, outputPath, filters) => {
   const certificateJson = JSON.parse(fs.readFileSync(inputPath, "utf8"));
   const cert = new Certificate(certificateJson);
-  cert.privacyFilter(filters);
-  const filteredCert = JSON.stringify(cert.getCertificate(), null, 2);
+  const newCertificate = cert.privacyFilter(filters);
+  const filteredCert = JSON.stringify(newCertificate.getCertificate(), null, 2);
 
   fs.writeFileSync(outputPath, filteredCert);
 
