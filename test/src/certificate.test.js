@@ -234,7 +234,6 @@ describe("certificate", () => {
     });
 
     describe("verifyCertificate", () => {
-
       it("should verify a valid cert", () => {
         const validCertJson = _.cloneDeep(rawCertificate);
         const validCert = new Certificate(validCertJson);
