@@ -28,8 +28,8 @@
     "web3-utils": "^1.0.0-beta.30"
   },
   "dependencies": {
-    "certificate-contract": "https://github.com/GovTechSG/certificate-contract",
     "@govtechsg/open-certificate": "^1.0.1",
+    "certificate-contract": "https://github.com/GovTechSG/certificate-contract",
     "lodash": "^4.17.5",
     "mkdirp": "^0.5.1",
     "proxyquire": "^1.8.0",
