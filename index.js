@@ -2,14 +2,13 @@
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const yargs = require("yargs");
+const { Certificate } = require("@govtechsg/open-certificate");
 
 const batchIssue = require("./src/batchIssue");
-const Certificate = require("./src/certificate");
 const CertificateStore = require("./src/contract/certificateStore.js");
 const { logger, addConsole } = require("./lib/logger");
 const {
-  generateRandomCertificate,
-  randomCertificate
+  generateRandomCertificate
 } = require("./src/randomCertificateGenerator");
 
 // Pass argv with $1 and $2 sliced
@@ -90,17 +89,16 @@ const parseArguments = argv =>
           })
     })
     .command({
-      command: "deploy <address> <name> <verificationUrl>",
+      command: "deploy <address> <name>",
       description:
         "Deploy a certificate store for issuer at " +
-        "address` with name `name` and verification URL at `verificationUrl`.",
+        "address` with name `name`.",
       builder: sub =>
         sub
           .positional("address", {
             description: "Account address of the issuer"
           })
           .positional("name", { description: "Name of the issuer" })
-          .positional("verificationUrl", { description: "URL of the issuer" })
     })
     .command({
       command: "transfer <originalOwner> <newOwner> <contractAddress>",
@@ -150,6 +148,20 @@ const parseArguments = argv =>
             description: "Address of the certificate store contract"
           })
     })
+    .command({
+      command: "revoke <certificateHash> <issuerAddress> <storeAddress>",
+      description:
+        "Revoke a certificate batch Merkle root to a certificate store",
+      builder: sub =>
+        sub
+          .positional("certificateHash", {
+            description: "Hash of the certificate to revoke."
+          })
+          .positional("issuerAddress", { description: "Address of the issuer" })
+          .positional("storeAddress", {
+            description: "Address of the certificate store contract"
+          })
+    })
     .parse(argv);
 
 const generate = (dir, count, contractAddress) => {
@@ -173,8 +185,8 @@ const filter = (inputPath, outputPath, filters) => {
 const batch = async (raw, batched) => {
   mkdirp.sync(batched);
   return batchIssue(raw, batched).then(merkleRoot => {
-    logger.info(`Batch Certificate Root: 0x${merkleRoot}`);
-    return `0x${merkleRoot}`;
+    logger.info(`Batch Certificate Root: ${merkleRoot}`);
+    return `${merkleRoot}`;
   });
 };
 
@@ -191,9 +203,9 @@ const verify = file => {
   return true;
 };
 
-const deploy = async (address, name, verificationUrl) => {
+const deploy = async (address, name) => {
   const store = new CertificateStore(address);
-  return store.deployStore(name, verificationUrl).then(deployedAddress => {
+  return store.deployStore(name).then(deployedAddress => {
     logger.info(`Contract deployed at ${deployedAddress}.`);
     return deployedAddress;
   });
@@ -225,6 +237,19 @@ const commit = async (merkleRoot, issuerAddress, storeAddress) => {
   });
 };
 
+const revoke = async (certificateHash, issuerAddress, storeAddress) => {
+  const store = new CertificateStore(issuerAddress, storeAddress);
+
+  return store.revokeCertificate(certificateHash).then(tx => {
+    logger.info(
+      `Certificate revoked: ${certificateHash}\n` +
+        `by ${issuerAddress} at certificate store ${storeAddress}\n`
+    );
+    logger.debug(JSON.stringify(tx));
+    return tx.transactionHash;
+  });
+};
+
 const main = async argv => {
   const args = parseArguments(argv);
   addConsole(args.logLevel);
@@ -248,11 +273,17 @@ const main = async argv => {
     case "verify":
       return verify(args.file);
     case "deploy":
-      return deploy(args.address, args.name, args.verificationUrl);
+      return deploy(args.address, args.name);
     case "transfer":
       return transfer(args.originalOwner, args.newOwner, args.contractAddress);
     case "commit":
       return commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
+    case "revoke":
+      return revoke(
+        args.certificateHash,
+        args.issuerAddress,
+        args.storeAddress
+      );
     default:
       throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
   }
@@ -273,10 +304,3 @@ if (typeof require !== "undefined" && require.main === module) {
       process.exit(1);
     });
 }
-
-module.exports = {
-  Certificate,
-  batchIssue,
-  generateRandomCertificate,
-  randomCertificate
-};

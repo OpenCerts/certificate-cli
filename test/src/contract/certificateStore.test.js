@@ -29,20 +29,6 @@ describe("certificateStore", () => {
     });
   });
 
-  describe("verificationUrl", () => {
-    it("should return verificationUrl from contract", () => {
-      const store = new CertificateStore(address0, contract0);
-      const verificationUrl = "https://tech.gov.sg";
-
-      store.contract.addMethod("verificationUrl");
-      store.contract.methods.verificationUrl().setResult(true, verificationUrl);
-
-      return store
-        .verificationUrl()
-        .should.eventually.deep.equal(verificationUrl);
-    });
-  });
-
   describe("owner", () => {
     it("should return owner from contract", () => {
       const store = new CertificateStore(address0, contract0);
@@ -281,7 +267,6 @@ describe("certificateStore", () => {
     it("should deploy a copy of contract after estimating gas", () => {
       const store = new CertificateStore(address0, contract0);
 
-      const url = "http://tech.gov.sg";
       const name = "GovTech DLT";
 
       const contractAddress = "0x13274Fe19C0178208bCbee397af8167A7be27f6f";
@@ -293,7 +278,7 @@ describe("certificateStore", () => {
 
       store.contract.deploy().expectParams({
         data: bytecode,
-        arguments: [url, name]
+        arguments: [name]
       });
 
       store.contract.deploy().expectOptions({
@@ -304,7 +289,7 @@ describe("certificateStore", () => {
       store.contract.deploy().setGasEstimate(espectedGas);
 
       return store
-        .deployStore(url, name)
+        .deployStore(name)
         .should.eventually.deep.equal(contractAddress);
     });
   });

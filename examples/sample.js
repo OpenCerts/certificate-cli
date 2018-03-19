@@ -9,7 +9,6 @@ const address0 = "0x627306090abaB3A6e1400e9345bC60c78a8BEf57";
 const address1 = "0xf17f52151EbEF6C7334FAD080c5704D77216b732";
 
 const contractName = "GovTech DLT";
-const contractUrl = "https://tech.gov.sg";
 
 const certificate1 = "0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE";
 const certificate2 = "0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc";
@@ -19,7 +18,7 @@ async function main() {
 
   // Deploy a new certificate store
   console.log(`Deploying new contract...`);
-  const address = await store.deployStore(contractUrl, contractName);
+  const address = await store.deployStore(contractName);
   console.log(`New contract deployed at ${address}`);
   console.log();
 
@@ -27,8 +26,6 @@ async function main() {
   console.log(`Checking contract parameters...`);
   const name = await store.name();
   console.log(`Contract name: ${name}`);
-  const url = await store.verificationUrl();
-  console.log(`Contract url: ${url}`);
   console.log();
 
   // Issuing certificate
@@ -51,6 +48,13 @@ async function main() {
   const tx2 = await store2.issueCertificate(certificate2);
   console.log(`Certificate 2 is issued`);
   // console.log(JSON.stringify(tx2, null, 2));
+  console.log();
+
+  // Revoke certificate
+  console.log(`Revoking certificate...`);
+  const tx3 = await store2.revokeCertificate(certificate1);
+  console.log(`Certificate is revoked`);
+  // console.log(JSON.stringify(tx1,null,2));
   console.log();
 
   process.exit(0);

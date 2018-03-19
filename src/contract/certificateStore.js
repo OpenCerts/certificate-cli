@@ -16,10 +16,6 @@ CertificateStore.prototype.name = function _name() {
   return this.contract.methods.name().call();
 };
 
-CertificateStore.prototype.verificationUrl = function _verificationUrl() {
-  return this.contract.methods.verificationUrl().call();
-};
-
 CertificateStore.prototype.owner = function _owner() {
   return this.contract.methods.owner().call();
 };
@@ -77,11 +73,10 @@ CertificateStore.prototype.issueCertificate = function _issueCertificate(hash) {
 };
 
 CertificateStore.prototype.revokeCertificate = function _revokeCertificate(
-  merkleRoot,
-  reason
+  merkleRoot
 ) {
   return this.contract.methods
-    .revokeCertificate(merkleRoot, reason)
+    .revokeCertificate(merkleRoot)
     .send({ from: this.account })
     .then(tx => {
       const { status, transactionHash } = tx;
@@ -96,13 +91,10 @@ CertificateStore.prototype.revokeCertificate = function _revokeCertificate(
     });
 };
 
-CertificateStore.prototype.deployStore = async function _deployStore(
-  verificationUrl,
-  name
-) {
+CertificateStore.prototype.deployStore = async function _deployStore(name) {
   const deployParams = {
     data: bytecode,
-    arguments: [verificationUrl, name]
+    arguments: [name]
   };
 
   const gasRequired = await this.contract.deploy(deployParams).estimateGas();

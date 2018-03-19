@@ -12,13 +12,13 @@ Generates a number of sample certificates based on the specification by open bad
 v2 with our extension.
 
 ```bash
-./index.js generate <dir> --count 20
+./index.js generate <dir> --count <CertificatesToGenerate> --contract-address <CertificateStoreContractAddress>
 ```
 
 Example:
 
 ```bash
-./index.js generate certificates/raw-certificates --count 50
+./index.js generate certificates/raw-certificates --count 50 --contract-address 0x345ca3e014aaf5dca488057592ee47305d9b3e10
 
 ========================== Generating random certificate ==========================
 
@@ -178,19 +178,16 @@ Warning: Please verify this certificate on the blockchain with the issuer's cert
 This command deploys a copy of the current version of certificate store on the blockchain. The name of the organisation and verification url is needed to initialise the store.
 
 ```bash
-./index.js deploy <issuerAddress> <storeName> <verificationUrl>
+./index.js deploy <issuerAddress> <storeName>
 ```
 
 Example:
 
 ```bash
-./index.js deploy 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 "GovTech DLT" https://tech.gov.sg
+./index.js deploy 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 "GovTech DLT"
 
-========================== Deploying new contract store ==========================
-
-Contract deployed at 0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0.
-
-===================================================================================
+info: Contract deployed at 0x8b784948EbC49E4C3f29765a2401464A3FEe5032.
+0x8b784948EbC49E4C3f29765a2401464A3FEe5032
 ```
 
 ## Commit Certificate Batch on Certificate Store
@@ -204,14 +201,12 @@ This command issues the certificate batch on the blockchain using the given cert
 Example:
 
 ```bash
-./index.js commit 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0
+./index.js commit 0x63f83f3f70bf6605f9a7490cff77824a53d91a31f524665729aea614ea0a16e4 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 0x345ca3e014aaf5dca488057592ee47305d9b3e10
 
-=================== Committing certificate on contract store ====================
+info: Certificate batch issued: 0x63f83f3f70bf6605f9a7490cff77824a53d91a31f524665729aea614ea0a16e4
+by 0xab5223dbfccb98e48cf2f5e526a35f135232f0a5 at certificate store 0x8b784948EbC49E4C3f29765a2401464A3FEe5032
 
-Certificate batch issued: 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE
-by 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 at contract address 0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0
-
-===================================================================================
+0x9bc3b8772a2c61b95971a13994dcc6768a66f214e5c7a60dd29802ea15db35ee
 ```
 
 ## Transferring Ownership of Contract Store
@@ -226,11 +221,8 @@ Example:
 ```bash
 ./index.js transfer 0xf17f52151EbEF6C7334FAD080c5704D77216b732 0x627306090abaB3A6e1400e9345bC60c78a8BEf57  0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0
 
-=================== Transfering ownership of contract store ====================
-
-Contract at 0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0 transfered from 0xf17f52151EbEF6C7334FAD080c5704D77216b732 to 0x627306090abaB3A6e1400e9345bC60c78a8BEf57.
-
-===================================================================================
+info: Contract at 0x8b784948EbC49E4C3f29765a2401464A3FEe5032 transfered from 0xab5223dbfccb98e48cf2f5e526a35f135232f0a5 to 0x627306090abaB3A6e1400e9345bC60c78a8BEf57
+0xc491b9b1ffc456859706d5aff913cfc663e93ed31815ace3e3decdf5de70b1a0
 ```
 
 ## Smart Contract Sample Interaction
@@ -247,11 +239,7 @@ node examples/sample.js
 ## TBD
 
 - Test for functions in index.js
-- Refactor to allow this package to be used as a npm module
 - Checks for certificate structure when issuing certificate
-- Add support to batch issue certificate on the contract store
-- Add support to verify certificate on the contract store
-- Hiding evidences on fully visible certificates
 
 ## Test
 
