@@ -1,8 +1,11 @@
 {
-  "name": "certificate-app",
-  "version": "1.0.0",
+  "name": "@govtechsg/certificate-cli",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+     "opencert": "./index.js"
+  },
   "scripts": {
     "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js'",
     "test-watch": "mocha ./test/helpers.js './test/**/*.test.js' --watch --recursive",
