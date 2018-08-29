@@ -14,7 +14,7 @@ const {
 // Pass argv with $1 and $2 sliced
 const parseArguments = argv =>
   yargs
-    .version("0.1.0")
+    .version("0.2.0")
     .usage("Certificate issuing, verification and revocation tool.")
     .strict()
     .epilogue(
@@ -40,84 +40,84 @@ const parseArguments = argv =>
           normalize: true
         })
     })
-    .command({
-      command: "generate [options] <dir>",
-      description: "Generate random certificates",
-      builder: sub =>
-        sub
-          .positional("dir", {
-            description: "The directory to generate the random certificates to",
-            normalize: true
-          })
-          .options({
-            count: {
-              default: 10,
-              number: true,
-              description: "The number of certificates to generate",
-              coerce: parseInt
-            }
-          })
-          .option({
-            "contract-address": {
-              default: "0x0",
-              description: "Address of the certificate store contract",
-              string: true
-            }
-          })
-    })
-    .command({
-      command:
-        "filter <inputCertificatePath> <outputCertificatePath> [filters...]",
-      description:
-        "Hide selected evidences on certificate. " +
-        "Example of filters: transcript.0.grade",
-      builder: sub =>
-        sub
-          .positional("inputCertificatePath", {
-            description: "The certificate file to read from",
-            normalize: true
-          })
-          .positional("outputCertificatePath", {
-            description: "The filtered certificate file to write to",
-            normalize: true
-          })
-          .options({
-            filters: {
-              type: "array",
-              description: "The number of certificates to generate"
-            }
-          })
-    })
-    .command({
-      command: "deploy <address> <name>",
-      description:
-        "Deploy a certificate store for issuer at " +
-        "address` with name `name`.",
-      builder: sub =>
-        sub
-          .positional("address", {
-            description: "Account address of the issuer"
-          })
-          .positional("name", { description: "Name of the issuer" })
-    })
-    .command({
-      command: "transfer <originalOwner> <newOwner> <contractAddress>",
-      description:
-        "Transfer ownership of certificate store at `contractAddress` from " +
-        "`originalOwner` to `newOwner`",
-      builder: sub =>
-        sub
-          .positional("originalOwner", {
-            description: "Original owner of the certificate store contract"
-          })
-          .positional("newOwner", {
-            description:
-              "New owner to transfer the certificate store contract to"
-          })
-          .positional("contactAddress", {
-            description: "Address of contract to transfer ownership."
-          })
-    })
+    // .command({
+    //   command: "generate [options] <dir>",
+    //   description: "Generate random certificates",
+    //   builder: sub =>
+    //     sub
+    //       .positional("dir", {
+    //         description: "The directory to generate the random certificates to",
+    //         normalize: true
+    //       })
+    //       .options({
+    //         count: {
+    //           default: 10,
+    //           number: true,
+    //           description: "The number of certificates to generate",
+    //           coerce: parseInt
+    //         }
+    //       })
+    //       .option({
+    //         "contract-address": {
+    //           default: "0x0",
+    //           description: "Address of the certificate store contract",
+    //           string: true
+    //         }
+    //       })
+    // })
+    // .command({
+    //   command:
+    //     "filter <inputCertificatePath> <outputCertificatePath> [filters...]",
+    //   description:
+    //     "Hide selected evidences on certificate. " +
+    //     "Example of filters: transcript.0.grade",
+    //   builder: sub =>
+    //     sub
+    //       .positional("inputCertificatePath", {
+    //         description: "The certificate file to read from",
+    //         normalize: true
+    //       })
+    //       .positional("outputCertificatePath", {
+    //         description: "The filtered certificate file to write to",
+    //         normalize: true
+    //       })
+    //       .options({
+    //         filters: {
+    //           type: "array",
+    //           description: "The number of certificates to generate"
+    //         }
+    //       })
+    // })
+    // .command({
+    //   command: "deploy <address> <name>",
+    //   description:
+    //     "Deploy a certificate store for issuer at " +
+    //     "address` with name `name`.",
+    //   builder: sub =>
+    //     sub
+    //       .positional("address", {
+    //         description: "Account address of the issuer"
+    //       })
+    //       .positional("name", { description: "Name of the issuer" })
+    // })
+    // .command({
+    //   command: "transfer <originalOwner> <newOwner> <contractAddress>",
+    //   description:
+    //     "Transfer ownership of certificate store at `contractAddress` from " +
+    //     "`originalOwner` to `newOwner`",
+    //   builder: sub =>
+    //     sub
+    //       .positional("originalOwner", {
+    //         description: "Original owner of the certificate store contract"
+    //       })
+    //       .positional("newOwner", {
+    //         description:
+    //           "New owner to transfer the certificate store contract to"
+    //       })
+    //       .positional("contactAddress", {
+    //         description: "Address of contract to transfer ownership."
+    //       })
+    // })
     .command({
       command: "batch [options] <raw-dir> <batched-dir>",
       description:
@@ -134,34 +134,34 @@ const parseArguments = argv =>
             normalize: true
           })
     })
-    .command({
-      command: "commit <merkleRoot> <issuerAddress> <storeAddress>",
-      description:
-        "Commit a certificate batch Merkle root to a certificate store",
-      builder: sub =>
-        sub
-          .positional("merkleRoot", {
-            description: "Merkle root of the certificate batch."
-          })
-          .positional("issuerAddress", { description: "Address of the issuer" })
-          .positional("storeAddress", {
-            description: "Address of the certificate store contract"
-          })
-    })
-    .command({
-      command: "revoke <certificateHash> <issuerAddress> <storeAddress>",
-      description:
-        "Revoke a certificate batch Merkle root to a certificate store",
-      builder: sub =>
-        sub
-          .positional("certificateHash", {
-            description: "Hash of the certificate to revoke."
-          })
-          .positional("issuerAddress", { description: "Address of the issuer" })
-          .positional("storeAddress", {
-            description: "Address of the certificate store contract"
-          })
-    })
+    // .command({
+    //   command: "commit <merkleRoot> <issuerAddress> <storeAddress>",
+    //   description:
+    //     "Commit a certificate batch Merkle root to a certificate store",
+    //   builder: sub =>
+    //     sub
+    //       .positional("merkleRoot", {
+    //         description: "Merkle root of the certificate batch."
+    //       })
+    //       .positional("issuerAddress", { description: "Address of the issuer" })
+    //       .positional("storeAddress", {
+    //         description: "Address of the certificate store contract"
+    //       })
+    // })
+    // .command({
+    //   command: "revoke <certificateHash> <issuerAddress> <storeAddress>",
+    //   description:
+    //     "Revoke a certificate batch Merkle root to a certificate store",
+    //   builder: sub =>
+    //     sub
+    //       .positional("certificateHash", {
+    //         description: "Hash of the certificate to revoke."
+    //       })
+    //       .positional("issuerAddress", { description: "Address of the issuer" })
+    //       .positional("storeAddress", {
+    //         description: "Address of the certificate store contract"
+    //       })
+    // })
     .parse(argv);
 
 const generate = (dir, count, contractAddress) => {
@@ -260,30 +260,30 @@ const main = async argv => {
     return false;
   }
   switch (args._[0]) {
-    case "generate":
-      return generate(args.dir, args.count, args.contractAddress);
+    // case "generate":
+    //   return generate(args.dir, args.count, args.contractAddress);
     case "batch":
       return batch(args.rawDir, args.batchedDir);
-    case "filter":
-      return filter(
-        args.inputCertificatePath,
-        args.outputCertificatePath,
-        args.filters
-      );
-    case "verify":
-      return verify(args.file);
-    case "deploy":
-      return deploy(args.address, args.name);
-    case "transfer":
-      return transfer(args.originalOwner, args.newOwner, args.contractAddress);
-    case "commit":
-      return commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
-    case "revoke":
-      return revoke(
-        args.certificateHash,
-        args.issuerAddress,
-        args.storeAddress
-      );
+    // case "filter":
+    //   return filter(
+    //     args.inputCertificatePath,
+    //     args.outputCertificatePath,
+    //     args.filters
+    //   );
+    // case "verify":
+    //   return verify(args.file);
+    // case "deploy":
+    //   return deploy(args.address, args.name);
+    // case "transfer":
+    //   return transfer(args.originalOwner, args.newOwner, args.contractAddress);
+    // case "commit":
+    //   return commit(args.merkleRoot, args.issuerAddress, args.storeAddress);
+    // case "revoke":
+    //   return revoke(
+    //     args.certificateHash,
+    //     args.issuerAddress,
+    //     args.storeAddress
+    //   );
     default:
       throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
   }
@@ -292,7 +292,7 @@ const main = async argv => {
 if (typeof require !== "undefined" && require.main === module) {
   main(process.argv.slice(2))
     .then(value => {
-      console.log(value); // eslint-disable-line no-console
+      // console.log(value); // eslint-disable-line no-console
       process.exit(0);
     })
     .catch(err => {
