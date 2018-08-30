@@ -1,6 +1,6 @@
 {
   "name": "@govtechsg/certificate-cli",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -27,8 +27,7 @@
     "eslint-plugin-prettier": "^2.6.0",
     "mocha": "^4.1.0",
     "nyc": "^11.4.1",
-    "prettier": "^1.10.2",
-    "web3-utils": "^1.0.0-beta.30"
+    "prettier": "^1.10.2"
   },
   "dependencies": {
     "@govtechsg/open-certificate": "^1.1.29",
@@ -37,7 +36,6 @@
     "lodash": "^4.17.5",
     "mkdirp": "^0.5.1",
     "proxyquire": "^1.8.0",
-    "web3": "^1.0.0-beta.29",
     "winston": "^3.0.0-rc1",
     "yargs": "^11.0.0"
   }
