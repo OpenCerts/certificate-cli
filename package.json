@@ -1,10 +1,10 @@
 {
   "name": "@govtechsg/certificate-cli",
-  "version": "2.0.0",
+  "version": "2.0.4",
   "description": "",
   "main": "index.js",
   "bin": {
-     "opencert": "./index.js"
+    "opencert": "./index.js"
   },
   "scripts": {
     "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js'",
@@ -31,8 +31,8 @@
     "web3-utils": "^1.0.0-beta.30"
   },
   "dependencies": {
-    "@govtechsg/open-certificate": "^1.0.4",
-    "certificate-contract": "https://github.com/GovTechSG/certificate-contract",
+    "@govtechsg/open-certificate": "^1.1.27",
+    "@govtechsg/certificate-contract": "^1.0.0",
     "lodash": "^4.17.5",
     "mkdirp": "^0.5.1",
     "proxyquire": "^1.8.0",

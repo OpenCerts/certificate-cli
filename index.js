@@ -2,7 +2,11 @@
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const yargs = require("yargs");
-const { Certificate } = require("@govtechsg/open-certificate");
+const {
+  validateSchema,
+  verifySignature,
+  schemas
+} = require("@govtechsg/open-certificate");
 
 const batchIssue = require("./src/batchIssue");
 const CertificateStore = require("./src/contract/certificateStore.js");
@@ -192,13 +196,17 @@ const batch = async (raw, batched) => {
 
 const verify = file => {
   const certificateJson = JSON.parse(fs.readFileSync(file, "utf8"));
-  const certificate = new Certificate(certificateJson);
-
-  certificate.verify();
-  logger.info("Certificate's signature is valid!");
-  logger.warn(
-    "Warning: Please verify this certificate on the blockchain with the issuer's certificate store."
-  );
+  if (
+    verifySignature(certificateJson) &&
+    validateSchema(schemas["1.3"], certificateJson)
+  ) {
+    logger.info("Certificate's signature is valid!");
+    logger.warn(
+      "Warning: Please verify this certificate on the blockchain with the issuer's certificate store."
+    );
+  } else {
+    logger.error("Certificate's signature is invalid");
+  }
 
   return true;
 };
@@ -269,9 +277,9 @@ const main = async argv => {
     //     args.inputCertificatePath,
     //     args.outputCertificatePath,
     //     args.filters
-    //   );
-    // case "verify":
-    //   return verify(args.file);
+    // );
+    case "verify":
+      return verify(args.file);
     // case "deploy":
     //   return deploy(args.address, args.name);
     // case "transfer":
