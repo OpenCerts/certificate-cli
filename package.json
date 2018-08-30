@@ -1,6 +1,6 @@
 {
   "name": "@govtechsg/certificate-cli",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "",
   "main": "index.js",
   "bin": {
@@ -31,8 +31,9 @@
     "web3-utils": "^1.0.0-beta.30"
   },
   "dependencies": {
-    "@govtechsg/open-certificate": "^1.1.27",
+    "@govtechsg/open-certificate": "^1.1.29",
     "@govtechsg/certificate-contract": "^1.0.0",
+    "json-schema-faker": "^0.5.0-rc15",
     "lodash": "^4.17.5",
     "mkdirp": "^0.5.1",
     "proxyquire": "^1.8.0",

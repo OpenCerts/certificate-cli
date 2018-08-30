@@ -2,10 +2,7 @@ const Web3 = require("web3");
 
 const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
 
-const {
-  abi,
-  bytecode
-} = require("../../node_modules/certificate-contract/build/contracts/CertificateStore.json");
+const { abi, bytecode } = require("./CertificateStore.json"); // grab the latest from @govtechsg/certificate-contract/build/
 
 function CertificateStore(issuerAccount, address) {
   this.account = issuerAccount;
