@@ -58,7 +58,6 @@ const parseArguments = argv =>
     })
     .parse(argv);
 
-
 const batch = async (raw, batched) => {
   mkdirp.sync(batched);
   return batchIssue(raw, batched).then(merkleRoot => {
@@ -84,7 +83,6 @@ const verify = file => {
   return true;
 };
 
-
 const main = async argv => {
   const args = parseArguments(argv);
   addConsole(args.logLevel);
@@ -106,7 +104,7 @@ const main = async argv => {
 
 if (typeof require !== "undefined" && require.main === module) {
   main(process.argv.slice(2))
-    .then(value => {
+    .then(() => {
       process.exit(0);
     })
     .catch(err => {

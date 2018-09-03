@@ -13,7 +13,7 @@ function getRawCertificates(unsignedCertDir) {
     fs.readdir(unsignedCertDirPath, (err, items) => {
       if (err) return reject(err);
 
-      filenameMap = {};
+      const filenameMap = {};
       const certificates = items.map(i => {
         const document = JSON.parse(
           fs.readFileSync(path.join(unsignedCertDir, i))
