@@ -1,21 +1,27 @@
 language: node_js
 node_js:
   - 9.5
-
-cache:
-  directories:
-  - "$HOME/.npm"
-
-install:
-  - npm ci  # Does the same thing as npm install without changing the package-lock.json
-
-script:
-  - npm run test
-  - npm run lint
-
-deploy:
-  provider: npm
-  email: chow.ruijie@gmail.com
-  api_key: $NPM_TOKEN
-  on:
-    branch: master 
+cache: yarn
+if: tag IS blank AND branch = "master"
+script: 
+  - npm run build
+  - yarn install --frozen-lockfile
+  - yarn lint
+  - printf -- "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+  - npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}";
+  - if [ "${TRAVIS_BRANCH}" = "master" ] && ! [ `printf -- "${TRAVIS_COMMIT_MESSAGE}" | grep "Publish"` ]; then
+      git checkout ${TRAVIS_BRANCH};
+      git reset --hard ${TRAVIS_COMMIT};
+      git remote set-url origin ${CIVAR_GH_REPOSITORY_URL};
+      npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}";
+      if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+        if [ -z "${TRAVIS_COMMIT_MESSAGE##*"[major release]"*}" ]; then
+          LERNA_CD_VERSION='major';
+        elif [ -z "${TRAVIS_COMMIT_MESSAGE##*"[minor release]"*}" ]; then
+          LERNA_CD_VERSION='minor';
+        else
+          LERNA_CD_VERSION='patch';
+        fi;
+        lerna publish --yes --cd-version ${LERNA_CD_VERSION};
+      fi;
+    fi;
