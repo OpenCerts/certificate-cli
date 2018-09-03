@@ -37,5 +37,8 @@
     "proxyquire": "^1.8.0",
     "winston": "^3.0.0-rc1",
     "yargs": "^11.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
