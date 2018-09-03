@@ -25,10 +25,10 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-prettier": "^2.6.0",
+    "lerna": "^3.2.1",
     "mocha": "^4.1.0",
     "nyc": "^11.4.1",
-    "prettier": "^1.10.2",
-    "lerna": "^3.2.1"
+    "prettier": "^1.10.2"
   },
   "dependencies": {
     "@govtechsg/certificate-contract": "^1.0.0",
