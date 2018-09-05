@@ -5,7 +5,6 @@ const {
   issueCertificates,
   certificateData
 } = require("@govtechsg/open-certificate");
-const logger = require('../lib/logger')
 
 const { get } = require("lodash");
 
@@ -16,7 +15,7 @@ function readCert(directory, filename) {
 }
 
 function setFilename(filenameMap, documentId, filename) {
-  if (filenameMap[documentId] !== null) {
+  if (documentId in filenameMap) {
     throw new Error(
       "There are duplicate IDs in the certificates to be batched up, please ensure that the ID fields in the certificates are unique."
     );
@@ -27,7 +26,7 @@ function setFilename(filenameMap, documentId, filename) {
 
 function getRawCertificates(unsignedCertDir) {
   const unsignedCertDirPath = path.resolve(unsignedCertDir);
-  return readdir.then(items => {
+  return readdir(unsignedCertDirPath).then(items => {
     let filenameMap = {};
     const certificates = items.map(filename => {
       const document = readCert(unsignedCertDirPath, filename);
@@ -64,23 +63,19 @@ function makeFilename(filenameMap, certificate) {
 }
 
 function batchIssue(inputDir, outputDir) {
-  return getRawCertificates(inputDir)
-    .then(documents => {
-      const batch = issueCertificates(documents.certificates);
-      const batchRoot = getBatchRoot(batch);
+  return getRawCertificates(inputDir).then(documents => {
+    const batch = issueCertificates(documents.certificates);
+    const batchRoot = getBatchRoot(batch);
 
-      batch.forEach(certificate => {
-        const signedCertFilename = makeFilename(
-          documents.filenameMap,
-          certificate
-        );
-        writeCertToDisk(outputDir, signedCertFilename, certificate);
-      });
-      return batchRoot;
-    })
-    .catch(err => {
-      logger.error(err);
+    batch.forEach(certificate => {
+      const signedCertFilename = makeFilename(
+        documents.filenameMap,
+        certificate
+      );
+      writeCertToDisk(outputDir, signedCertFilename, certificate);
     });
+    return batchRoot;
+  });
 }
 
 module.exports = batchIssue;

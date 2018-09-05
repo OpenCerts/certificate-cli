@@ -60,10 +60,14 @@ const parseArguments = argv =>
 
 const batch = async (raw, batched) => {
   mkdirp.sync(batched);
-  return batchIssue(raw, batched).then(merkleRoot => {
-    logger.info(`Batch Certificate Root: ${merkleRoot}`);
-    return `${merkleRoot}`;
-  });
+  return batchIssue(raw, batched)
+    .then(merkleRoot => {
+      logger.info(`Batch Certificate Root: ${merkleRoot}`);
+      return `${merkleRoot}`;
+    })
+    .catch(err => {
+      logger.error(err);
+    });
 };
 
 const verify = file => {
