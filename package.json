@@ -7,7 +7,7 @@
     "opencert": "./index.js"
   },
   "scripts": {
-    "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js './test/**/*.test.js'",
+    "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js  './test/**/*.test.js' './src/**/*.test.js'",
     "test-watch": "mocha ./test/helpers.js './test/**/*.test.js' --watch --recursive",
     "lint": "eslint . --ext .js --max-warnings 0",
     "lint:fix": "eslint . --ext .js --fix"

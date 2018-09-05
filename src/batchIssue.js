@@ -1,28 +1,40 @@
 const fs = require("fs");
 const path = require("path");
+const util = require("util");
 const {
   issueCertificates,
   certificateData
 } = require("@govtechsg/open-certificate");
+const logger = require('../lib/logger')
 
 const { get } = require("lodash");
 
+const readdir = util.promisify(fs.readdir);
+
+function readCert(directory, filename) {
+  return JSON.parse(fs.readFileSync(path.join(directory, filename)));
+}
+
+function setFilename(filenameMap, documentId, filename) {
+  if (filenameMap[documentId] !== null) {
+    throw new Error(
+      "There are duplicate IDs in the certificates to be batched up, please ensure that the ID fields in the certificates are unique."
+    );
+  } else {
+    return Object.assign(filenameMap, { [documentId]: filename });
+  }
+}
+
 function getRawCertificates(unsignedCertDir) {
   const unsignedCertDirPath = path.resolve(unsignedCertDir);
-  return new Promise((resolve, reject) => {
-    fs.readdir(unsignedCertDirPath, (err, items) => {
-      if (err) return reject(err);
-
-      const filenameMap = {};
-      const certificates = items.map(i => {
-        const document = JSON.parse(
-          fs.readFileSync(path.join(unsignedCertDir, i))
-        );
-        filenameMap[document.id] = i;
-        return document;
-      });
-      return resolve({ filenameMap, certificates });
+  return readdir.then(items => {
+    let filenameMap = {};
+    const certificates = items.map(filename => {
+      const document = readCert(unsignedCertDirPath, filename);
+      filenameMap = setFilename(filenameMap, document.id, filename);
+      return document;
     });
+    return { filenameMap, certificates };
   });
 }
 
@@ -52,19 +64,23 @@ function makeFilename(filenameMap, certificate) {
 }
 
 function batchIssue(inputDir, outputDir) {
-  return getRawCertificates(inputDir).then(documents => {
-    const batch = issueCertificates(documents.certificates);
-    const batchRoot = getBatchRoot(batch);
+  return getRawCertificates(inputDir)
+    .then(documents => {
+      const batch = issueCertificates(documents.certificates);
+      const batchRoot = getBatchRoot(batch);
 
-    batch.forEach(certificate => {
-      const signedCertFilename = makeFilename(
-        documents.filenameMap,
-        certificate
-      );
-      writeCertToDisk(outputDir, signedCertFilename, certificate);
+      batch.forEach(certificate => {
+        const signedCertFilename = makeFilename(
+          documents.filenameMap,
+          certificate
+        );
+        writeCertToDisk(outputDir, signedCertFilename, certificate);
+      });
+      return batchRoot;
+    })
+    .catch(err => {
+      logger.error(err);
     });
-    return batchRoot;
-  });
 }
 
 module.exports = batchIssue;
