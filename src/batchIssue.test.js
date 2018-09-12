@@ -1,29 +1,58 @@
 const proxyquire = require("proxyquire");
 const jsf = require("json-schema-faker");
 const { schemas } = require("@govtechsg/open-certificate");
-const { range } = require("lodash");
-
-const readdirStub = function() {
-  console.log("stub called");
-  return ["asd", "asd2", "asd3"];
-};
-const batchIssue = proxyquire("./batchIssue", { fs: { readdir: readdirStub } });
+const { map, range, get } = require("lodash");
 
 let certs = [];
+const filenameMap = {};
+const signedCerts = [];
 
-function makeCert(count) {
+const getCertsStub = async function() {
+  return { filenameMap, certificates: certs };
+};
+
+const writeCertsStub = function(outputDir, signedCertFilename, certificate) {
+  signedCerts.push(certificate);
+};
+
+const batchIssue = proxyquire("./batchIssue", {
+  "./diskUtils": {
+    getRawCertificates: getCertsStub,
+    writeCertToDisk: writeCertsStub
+  }
+});
+
+function makeCerts(count) {
   const schema = schemas["1.3"];
   return Promise.all(range(0, count).map(() => jsf.resolve(schema)));
 }
 
+async function whenThereAreDuplicateCertificateIDs() {
+  const withDuplicateCertIDs = await makeCerts(10);
+  withDuplicateCertIDs[0].id = "abc123";
+  withDuplicateCertIDs[1].id = "abc123";
+
+  certs = withDuplicateCertIDs;
+}
+
 describe("src/batchIssue", () => {
   before(async () => {
-    certs = await makeCert(10);
+    certs = await makeCerts(10);
   });
 
-  it("should", () => {
-    console.log(certs);
-    batchIssue("mew", "mew2");
-    console.log("wtf");
+  it("should generate signatures for all the input certs", async () => {
+    const merkleRoot = await batchIssue("mew", "mew2");
+    expect(merkleRoot.length).to.be.equal(64);
+    map(signedCerts, cert => {
+      expect(get(cert, "signature.merkleRoot")).to.be.deep.equal(merkleRoot);
+    });
+  });
+
+  it("shoud throw an error if there are duplicate certificate IDs", async () => {
+    await whenThereAreDuplicateCertificateIDs();
+
+    return expect(batchIssue("mew", "mew2")).to.be.rejectedWith(
+      "There were duplicate document IDs found in the certificates, please ensure that the IDs are unique"
+    );
   });
 });
