@@ -9,13 +9,7 @@ function readCert(directory, filename) {
 }
 
 function setFilename(filenameMap, documentId, filename) {
-  if (documentId in filenameMap) {
-    throw new Error(
-      "There are duplicate IDs in the certificates to be batched up, please ensure that the ID fields in the certificates are unique."
-    );
-  } else {
-    return Object.assign(filenameMap, { [documentId]: filename });
-  }
+  return Object.assign(filenameMap, { [documentId]: filename });
 }
 
 function getRawCertificates(unsignedCertDir) {
