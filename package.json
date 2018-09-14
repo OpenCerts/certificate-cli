@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@govtechsg/certificate-contract": "^1.0.0",
-    "@govtechsg/open-certificate": "^1.1.29",
+    "@govtechsg/open-certificate": "^1.1.33",
     "json-schema-faker": "^0.5.0-rc15",
     "lodash": "^4.17.5",
     "mkdirp": "^0.5.1",
