@@ -62,7 +62,7 @@ const batch = async (raw, batched) => {
   mkdirp.sync(batched);
   return batchIssue(raw, batched)
     .then(merkleRoot => {
-      logger.info(`Batch Certificate Root: ${merkleRoot}`);
+      logger.info(`Batch Certificate Root: 0x${merkleRoot}`);
       return `${merkleRoot}`;
     })
     .catch(err => {
