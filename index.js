@@ -5,6 +5,7 @@ const yargs = require("yargs");
 const {
   validateSchema,
   verifySignature,
+  obfuscateFields,
   schemas
 } = require("@govtechsg/open-certificate");
 
@@ -30,6 +31,20 @@ const parseArguments = argv =>
         description: "Set the log level",
         global: true
       }
+    })
+    .command({
+      command: "filter <input> <output> [fields..]",
+      description: "Obfuscate fields in the certificate",
+      builder: sub =>
+        sub
+          .positional("input", {
+            description: "Certificate file to verify",
+            normalize: true
+          })
+          .positional("output", {
+            description: "Certificate file to verify",
+            normalize: true
+          })
     })
     .command({
       command: "verify [options] <file>",
@@ -72,10 +87,9 @@ const batch = async (raw, batched) => {
 
 const verify = file => {
   const certificateJson = JSON.parse(fs.readFileSync(file, "utf8"));
-  if (
-    verifySignature(certificateJson) &&
-    validateSchema(schemas["1.3"], certificateJson)
-  ) {
+  console.log(verifySignature(certificateJson));
+  console.log(validateSchema(certificateJson));
+  if (verifySignature(certificateJson) && validateSchema(certificateJson)) {
     logger.info("Certificate's signature is valid!");
     logger.warn(
       "Warning: Please verify this certificate on the blockchain with the issuer's certificate store."
@@ -85,6 +99,16 @@ const verify = file => {
   }
 
   return true;
+};
+
+const obfuscate = (input, output, fields) => {
+  const certificateJson = JSON.parse(fs.readFileSync(input, "utf8"));
+  const obfuscatedCertificate = obfuscateFields(certificateJson, fields);
+  const test = JSON.parse(fs.readFileSync(output));
+  console.log(JSON.stringify(test, null, 2));
+  console.log("Validate:", verifySignature(test) && validateSchema(test));
+  fs.writeFileSync(output, JSON.stringify(obfuscatedCertificate, null, 2));
+  logger.info(`Obfuscated certificate saved to: ${output}`);
 };
 
 const main = async argv => {
@@ -101,6 +125,8 @@ const main = async argv => {
       return batch(args.rawDir, args.batchedDir);
     case "verify":
       return verify(args.file);
+    case "filter":
+      return obfuscate(args.input, args.output, args.fields);
     default:
       throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
   }
