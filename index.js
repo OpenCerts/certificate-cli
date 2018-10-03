@@ -5,8 +5,7 @@ const yargs = require("yargs");
 const {
   validateSchema,
   verifySignature,
-  obfuscateFields,
-  schemas
+  obfuscateFields
 } = require("@govtechsg/open-certificate");
 
 const batchIssue = require("./src/batchIssue");
@@ -100,7 +99,6 @@ const verify = file => {
 };
 
 const obfuscate = (input, output, fields) => {
-  console.log(fields)
   const certificateJson = JSON.parse(fs.readFileSync(input, "utf8"));
   const obfuscatedCertificate = obfuscateFields(certificateJson, fields);
   const isValid =
