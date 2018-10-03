@@ -100,6 +100,7 @@ const verify = file => {
 };
 
 const obfuscate = (input, output, fields) => {
+  console.log(fields)
   const certificateJson = JSON.parse(fs.readFileSync(input, "utf8"));
   const obfuscatedCertificate = obfuscateFields(certificateJson, fields);
   const isValid =
@@ -131,7 +132,7 @@ const main = async argv => {
     case "verify":
       return verify(args.file);
     case "filter":
-      return obfuscate(args.input, args.output, args.fields);
+      return obfuscate(args.source, args.destination, args.fields);
     default:
       throw new Error(`Unknown command ${args._[0]}. Possible bug.`);
   }
