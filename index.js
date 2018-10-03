@@ -33,16 +33,16 @@ const parseArguments = argv =>
       }
     })
     .command({
-      command: "filter <input> <output> [fields..]",
+      command: "filter <source> <destination> [fields..]",
       description: "Obfuscate fields in the certificate",
       builder: sub =>
         sub
-          .positional("input", {
-            description: "Certificate file to verify",
+          .positional("source", {
+            description: "Source signed certificate filename",
             normalize: true
           })
-          .positional("output", {
-            description: "Certificate file to verify",
+          .positional("destination", {
+            description: "Destination to write obfuscated certificate file to",
             normalize: true
           })
     })
@@ -102,10 +102,14 @@ const verify = file => {
 const obfuscate = (input, output, fields) => {
   const certificateJson = JSON.parse(fs.readFileSync(input, "utf8"));
   const obfuscatedCertificate = obfuscateFields(certificateJson, fields);
-  const isValid = verifySignature(obfuscatedCertificate) && validateSchema(obfuscatedCertificate)
+  const isValid =
+    verifySignature(obfuscatedCertificate) &&
+    validateSchema(obfuscatedCertificate);
 
   if (!isValid) {
-    logger.error("Privacy filtering caused document to fail schema or signature validation")
+    logger.error(
+      "Privacy filtering caused document to fail schema or signature validation"
+    );
   } else {
     fs.writeFileSync(output, JSON.stringify(obfuscatedCertificate, null, 2));
     logger.info(`Obfuscated certificate saved to: ${output}`);
