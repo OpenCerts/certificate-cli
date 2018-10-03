@@ -87,8 +87,6 @@ const batch = async (raw, batched) => {
 
 const verify = file => {
   const certificateJson = JSON.parse(fs.readFileSync(file, "utf8"));
-  console.log(verifySignature(certificateJson));
-  console.log(validateSchema(certificateJson));
   if (verifySignature(certificateJson) && validateSchema(certificateJson)) {
     logger.info("Certificate's signature is valid!");
     logger.warn(
@@ -104,11 +102,14 @@ const verify = file => {
 const obfuscate = (input, output, fields) => {
   const certificateJson = JSON.parse(fs.readFileSync(input, "utf8"));
   const obfuscatedCertificate = obfuscateFields(certificateJson, fields);
-  const test = JSON.parse(fs.readFileSync(output));
-  console.log(JSON.stringify(test, null, 2));
-  console.log("Validate:", verifySignature(test) && validateSchema(test));
-  fs.writeFileSync(output, JSON.stringify(obfuscatedCertificate, null, 2));
-  logger.info(`Obfuscated certificate saved to: ${output}`);
+  const isValid = verifySignature(obfuscatedCertificate) && validateSchema(obfuscatedCertificate)
+
+  if (!isValid) {
+    logger.error("Privacy filtering caused document to fail schema or signature validation")
+  } else {
+    fs.writeFileSync(output, JSON.stringify(obfuscatedCertificate, null, 2));
+    logger.info(`Obfuscated certificate saved to: ${output}`);
+  }
 };
 
 const main = async argv => {
