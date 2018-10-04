@@ -6,7 +6,7 @@ const { filter, some } = require("lodash");
 const readdir = util.promisify(fs.readdir);
 
 const opencertsFileExtensions = [
-  /(.*)(\.)(opencert|OpenCert|Opencert)$/,
+  /(.*)(\.)(opencert)$/,
   /(.*)(\.)(json)$/
 ];
 
@@ -15,7 +15,7 @@ function readCert(directory, filename) {
 }
 
 function isOpenCertFileExtension(filename) {
-  return some(opencertsFileExtensions.map(mask => mask.test(filename)));
+  return some(opencertsFileExtensions.map(mask => mask.test(filename.toLowerCase())));
 }
 
 function setFilename(filenameMap, documentId, filename) {
