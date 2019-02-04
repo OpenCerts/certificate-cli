@@ -25,7 +25,7 @@ function combinedHash(first, second) {
   if (!first) {
     return second;
   }
-  return ethereumjsUtil.sha3(bufSortJoin(first, second));
+  return ethereumjsUtil.keccak256(bufSortJoin(first, second));
 }
 
 /**
