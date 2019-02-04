@@ -8,7 +8,7 @@ const {
   obfuscateFields
 } = require("@govtechsg/open-certificate");
 
-const batchIssue = require("./src/batchIssue");
+const { batchIssue } = require("./src/batchIssue");
 const { logger, addConsole } = require("./lib/logger");
 
 // Pass argv with $1 and $2 sliced

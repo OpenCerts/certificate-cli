@@ -17,27 +17,10 @@ function isOpenCertFileExtension(filename) {
   );
 }
 
-function setFilename(filenameMap, documentId, filename) {
-  return Object.assign(filenameMap, { [documentId]: filename });
-}
-
-// Returns all opencerts file in directory
 const certificatesInDirectory = async dir => {
   const items = await readdir(dir);
   return filter(items, isOpenCertFileExtension);
 };
-
-async function getRawCertificates(unsignedCertDir) {
-  const unsignedCertDirPath = path.resolve(unsignedCertDir);
-  const certFiles = await certificatesInDirectory(unsignedCertDirPath);
-  let filenameMap = {};
-  const certificates = certFiles.map(filename => {
-    const document = readCert(unsignedCertDirPath, filename);
-    filenameMap = setFilename(filenameMap, document.id, filename);
-    return document;
-  });
-  return { filenameMap, certificates };
-}
 
 function writeCertToDisk(destinationDir, filename, certificate) {
   fs.writeFileSync(
@@ -47,7 +30,6 @@ function writeCertToDisk(destinationDir, filename, certificate) {
 }
 
 module.exports = {
-  getRawCertificates,
   certificatesInDirectory,
   writeCertToDisk,
   readCert,
