@@ -1,71 +1,34 @@
-const { getRawCertificates, writeCertToDisk } = require("./diskUtils");
-const fs = require("fs");
-const path = require("path");
-const util = require("util");
-const mkdirp = require("mkdirp");
-const ethereumjsUtil = require("ethereumjs-util");
 const {
-  issueCertificate,
-  issueCertificates,
-  certificateData
-} = require("@govtechsg/open-certificate");
+  readCert,
+  writeCertToDisk,
+  certificatesInDirectory
+} = require("./diskUtils");
+const mkdirp = require("mkdirp");
+const { issueCertificate } = require("@govtechsg/open-certificate");
+const { combinedHash, hashToBuffer } = require("./crypto");
 
 const CERTIFICATES = "./load/unsigned/";
 const CERTIFICATES_SIGNED = "./load/signed/";
 
-const readdir = util.promisify(fs.readdir);
-
-function readCert(directory, filename) {
-  return JSON.parse(fs.readFileSync(path.join(directory, filename)));
-}
-
-/**
- * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
- * @param {[Buffer]} args The buffers to concatenate
- */
-function bufSortJoin(...args) {
-  return Buffer.concat([...args].sort(Buffer.compare));
-}
-
-/**
- * Returns the keccak hash of two buffers after concatenating them and sorting them
- * If either hash is not given, the input is returned
- * @param {Buffer} first A buffer to be hashed
- * @param {Buffer} second A buffer to be hashed
- */
-function combinedHash(first, second) {
-  if (!second) {
-    return first;
-  }
-  if (!first) {
-    return second;
-  }
-  return ethereumjsUtil.sha3(bufSortJoin(first, second));
-}
-
-// If hash is not a buffer, convert it to buffer (without hashing it)
-function hashToBuffer(hash) {
-  return Buffer.isBuffer(hash) && hash.length === 32
-    ? hash
-    : Buffer.from(hash, "hex");
-}
-
 /*
-function writeCertToDisk(destinationDir, filename, certificate) {
-  fs.writeFileSync(
-    path.join(path.resolve(destinationDir), filename),
-    JSON.stringify(certificate, null, 2)
-  );
-} */
+describe("Test Cert", () => {
+  it("works", () => {
+    const cert = require("../load/signed/cert.json");
+    console.log(verifySignature(cert));
+    console.log(validateSchema(cert));
+  });
+});
+*/
 
-describe.only("Test", () => {
+describe("Test", () => {
   it("works", async () => {
-    // const res = await getRawCertificates(CERTIFICATES);
     console.time("TIME");
-    const res = await readdir(CERTIFICATES);
-    console.timeLog("TIME");
 
+    // Get array of all certificate files in directory
+    const certFileNames = await certificatesInDirectory(CERTIFICATES);
     mkdirp.sync(CERTIFICATES_SIGNED);
+
+    console.timeLog("TIME");
 
     // Create map for name to hash;
     const fileMap = {};
@@ -73,7 +36,7 @@ describe.only("Test", () => {
     const hashArray = [[]];
 
     // Phase 1: For each certificate, read content, digest and write to file
-    res.forEach(file => {
+    certFileNames.forEach(file => {
       // Read
       const certificate = readCert(CERTIFICATES, file);
       // Digest
@@ -122,8 +85,7 @@ describe.only("Test", () => {
     console.timeLog("TIME");
 
     // Phase 3: Add proofs to signedCertificates
-    const res2 = await readdir(CERTIFICATES_SIGNED);
-    res.forEach(file => {
+    certFileNames.forEach(file => {
       // Read
       const certificate = readCert(CERTIFICATES_SIGNED, file);
 
@@ -145,5 +107,5 @@ describe.only("Test", () => {
 
     // console.log(hashMap);
     console.timeLog("TIME");
-  }).timeout(20000);
+  }).timeout(200000000);
 });
