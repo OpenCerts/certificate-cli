@@ -58,8 +58,8 @@ const merkleHashmap = leafHashes => {
     const currentLayer = hashArray[currentLayerIndex];
     hashArray.push([]);
 
-    const layerLenght = currentLayer.length;
-    for (let i = 0; i < layerLenght - 1; i += 2) {
+    const layerLength = currentLayer.length;
+    for (let i = 0; i < layerLength - 1; i += 2) {
       const element1 = currentLayer[i];
       const element2 = currentLayer[i + 1];
 
@@ -95,6 +95,11 @@ const batchIssue = async (inputDir, outputDir) => {
     inputDir,
     outputDir
   );
+
+  if (!individualCertificateHashes)
+    throw new Error(`No certificates found in ${inputDir}`);
+  if (individualCertificateHashes.length === 1)
+    throw new Error(`No need to batch certificate if there is only one`);
 
   // Phase 2: Efficient merkling to build hashmap
   const hashMap = merkleHashmap(individualCertificateHashes);
