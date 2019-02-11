@@ -3,28 +3,7 @@
 ## Setup
 
 ```bash
-yarn
-```
-
-## Generate Sample Certificates
-
-Generates a number of sample certificates based on the specification by open badge
-v2 with our extension.
-
-```bash
-./index.js generate <dir> --count <CertificatesToGenerate> --contract-address <CertificateStoreContractAddress>
-```
-
-Example:
-
-```bash
-./index.js generate certificates/raw-certificates --count 50 --contract-address 0x345ca3e014aaf5dca488057592ee47305d9b3e10
-
-========================== Generating random certificate ==========================
-
-Generated 50 certificates.
-
-===================================================================================
+npm install
 ```
 
 ## Batching Certificates
@@ -41,12 +20,40 @@ Example:
 ```bash
 ./index.js batch ./certificates/raw-certificates/ ./certificates/processed-certificates/
 
-============================== Batching certificates ==============================
+2019-02-11T08:37:44.848Z info: Batch Certificate Root: 0xf51030c5751a646284c898cff0f9d833c64a50d6f307b61f2c96c3c838b13bfc
+```
 
-Batch Certificate Root:
-458a80232eda8a816972be8ac731feb50727149aff6287d70142821ae160caf7
+## Verifying All Signed Certificate in a Directory
 
-===================================================================================
+This command verifies that the certificate (and all it's evidence) is valid and is part of the certificate batch. However, it does not verify that the batch's merkle root is stored on the blockchain. User will need to verify that the certificate has indeed been issued by checking with the issuer's smart contract.
+
+```bash
+./index.js verify-all <PathToCertificate>
+```
+
+Example:
+
+```bash
+./index.js verify-all ./certificates/processed-certificates
+
+2019-02-11T08:38:36.767Z info: All certificates in ./certificates/processed-certificates is verified
+```
+
+## Verifying Single Signed Certificate
+
+This command verifies that the certificate (and all it's evidence) is valid and is part of the certificate batch. However, it does not verify that the batch's merkle root is stored on the blockchain. User will need to verify that the certificate has indeed been issued by checking with the issuer's smart contract.
+
+```bash
+./index.js verify <PathToCertificate>
+```
+
+Example:
+
+```bash
+./index.js verify ./certificates/processed-certificates/urn:uuid:08b1f10a-6bf0-46c8-bbfd-64750b0d73ef.json
+
+2019-02-11T08:41:17.301Z info: Certificate's signature is valid!
+2019-02-11T08:41:17.302Z warn: Warning: Please verify this certificate on the blockchain with the issuer's certificate store.
 ```
 
 ## Certificate privacy filter
@@ -151,98 +158,8 @@ Example:
 ===================================================================================
 ```
 
-## Verifying Signed Certificate
-
-This command verifies that the certificate (and all it's evidence) is valid and is part of the certificate batch. However, it does not verify that the batch's merkle root is stored on the blockchain. User will need to verify that the certificate has indeed been issued by checking with the issuer's smart contract.
-
-```bash
-./index.js verify <PathToCertificate>
-```
-
-Example:
-
-```bash
-./index.js verify ./certificates/processed-certificates/urn:uuid:08b1f10a-6bf0-46c8-bbfd-64750b0d73ef.json
-
-============================== Verifying certificate ==============================
-
-Certificate's signature is valid!
-
-Warning: Please verify this certificate on the blockchain with the issuer's certificate store.
-
-===================================================================================
-```
-
-## Deploy Certificate Store
-
-This command deploys a copy of the current version of certificate store on the blockchain. The name of the organisation and verification url is needed to initialise the store.
-
-```bash
-./index.js deploy <issuerAddress> <storeName>
-```
-
-Example:
-
-```bash
-./index.js deploy 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 "GovTech DLT"
-
-info: Contract deployed at 0x8b784948EbC49E4C3f29765a2401464A3FEe5032.
-0x8b784948EbC49E4C3f29765a2401464A3FEe5032
-```
-
-## Commit Certificate Batch on Certificate Store
-
-This command issues the certificate batch on the blockchain using the given certificate store.
-
-```bash
-./index.js commit <merkleRoot> <issuerAddress> <storeAddress>
-```
-
-Example:
-
-```bash
-./index.js commit 0x63f83f3f70bf6605f9a7490cff77824a53d91a31f524665729aea614ea0a16e4 0x627306090abaB3A6e1400e9345bC60c78a8BEf57 0x345ca3e014aaf5dca488057592ee47305d9b3e10
-
-info: Certificate batch issued: 0x63f83f3f70bf6605f9a7490cff77824a53d91a31f524665729aea614ea0a16e4
-by 0xab5223dbfccb98e48cf2f5e526a35f135232f0a5 at certificate store 0x8b784948EbC49E4C3f29765a2401464A3FEe5032
-
-0x9bc3b8772a2c61b95971a13994dcc6768a66f214e5c7a60dd29802ea15db35ee
-```
-
-## Transferring Ownership of Contract Store
-
-```bash
-./index.js transfer <originalOwner> <newOwner> <contractAddress>
-
-```
-
-Example:
-
-```bash
-./index.js transfer 0xf17f52151EbEF6C7334FAD080c5704D77216b732 0x627306090abaB3A6e1400e9345bC60c78a8BEf57  0x8CdaF0CD259887258Bc13a92C0a6dA92698644C0
-
-info: Contract at 0x8b784948EbC49E4C3f29765a2401464A3FEe5032 transfered from 0xab5223dbfccb98e48cf2f5e526a35f135232f0a5 to 0x627306090abaB3A6e1400e9345bC60c78a8BEf57
-0xc491b9b1ffc456859706d5aff913cfc663e93ed31815ace3e3decdf5de70b1a0
-```
-
-## Smart Contract Sample Interaction
-
-This script automatically deploys a certificate store and runs all the functions available in the smart contract.
-
-Before running the script be sure to connect to ganache cli/ui with the following mnemonic: `candy maple cake sugar pudding cream honey rich smooth crumble sweet treat
-`
-
-```bash
-node examples/sample.js
-```
-
-## TBD
-
-- Test for functions in index.js
-- Checks for certificate structure when issuing certificate
-
 ## Test
 
 ```
-yarn test
+npm run test
 ```

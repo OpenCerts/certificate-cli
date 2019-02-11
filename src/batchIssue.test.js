@@ -189,14 +189,4 @@ describe("batchIssue", () => {
       expect(hmap).to.deep.equal(expectedHmap);
     });
   });
-
-  /*
-describe("Test", () => {
-  it("works", async () => {
-    const CERTIFICATES = "./load/unsigned/";
-    const CERTIFICATES_SIGNED = "./load/signed/";
-    await batchIssue(CERTIFICATES, CERTIFICATES_SIGNED);
-  }).timeout(200000000);
-});
-*/
 });
