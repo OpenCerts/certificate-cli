@@ -53,7 +53,7 @@ describe("batchIssue", () => {
         }
       });
 
-      const root = await appendProofToCerts("DIR", hashMap);
+      const root = await appendProofToCerts("DIR", "DIR", hashMap);
 
       expect(root).to.be.eql("e");
 

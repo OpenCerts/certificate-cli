@@ -3,6 +3,7 @@ const {
   writeCertToDisk,
   certificatesInDirectory
 } = require("./diskUtils");
+const { dirSync } = require("tmp");
 const mkdirp = require("mkdirp");
 const { issueCertificate } = require("@govtechsg/open-certificate");
 const { combinedHash, hashToBuffer } = require("./crypto");
@@ -22,11 +23,15 @@ const digestCertificate = async (undigestedCertDir, digestedCertDir) => {
   return hashArray;
 };
 
-const appendProofToCerts = async (digestedCertDir, hashMap) => {
-  const certFileNames = await certificatesInDirectory(digestedCertDir);
+const appendProofToCerts = async (
+  intermediateDir,
+  digestedCertDir,
+  hashMap
+) => {
+  const certFileNames = await certificatesInDirectory(intermediateDir);
   let merkleRoot;
   certFileNames.forEach(file => {
-    const certificate = readCert(digestedCertDir, file);
+    const certificate = readCert(intermediateDir, file);
 
     const certificateHash = certificate.signature.targetHash;
     const proof = [];
@@ -44,6 +49,7 @@ const appendProofToCerts = async (digestedCertDir, hashMap) => {
 
     writeCertToDisk(digestedCertDir, file, certificate);
   });
+
   return merkleRoot;
 };
 
@@ -88,12 +94,18 @@ const merkleHashmap = leafHashes => {
 };
 
 const batchIssue = async (inputDir, outputDir) => {
+  // Create output dir
   mkdirp.sync(outputDir);
+
+  // Create intermediate dir
+  const { name: intermediateDir, removeCallback } = dirSync({
+    unsafeCleanup: true
+  });
 
   // Phase 1: For each certificate, read content, digest and write to file
   const individualCertificateHashes = await digestCertificate(
     inputDir,
-    outputDir
+    intermediateDir
   );
 
   if (!individualCertificateHashes)
@@ -105,7 +117,17 @@ const batchIssue = async (inputDir, outputDir) => {
   const hashMap = merkleHashmap(individualCertificateHashes);
 
   // Phase 3: Add proofs to signedCertificates
-  return appendProofToCerts(outputDir, hashMap);
+  const merkleRoot = await appendProofToCerts(
+    intermediateDir,
+    outputDir,
+    hashMap,
+    () => removeCallback()
+  );
+
+  // Remove intermediate dir
+  removeCallback();
+
+  return merkleRoot;
 };
 
 module.exports = {
