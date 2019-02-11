@@ -10,11 +10,12 @@ const {
 const batchVerify = require("./src/batchVerify");
 const { batchIssue } = require("./src/batchIssue");
 const { logger, addConsole } = require("./lib/logger");
+const { version } = require("./package.json");
 
 // Pass argv with $1 and $2 sliced
 const parseArguments = argv =>
   yargs
-    .version("0.2.0")
+    .version(version)
     .usage("Certificate issuing, verification and revocation tool.")
     .strict()
     .epilogue(

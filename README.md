@@ -72,6 +72,12 @@ Example:
 2019-02-11T08:43:50.643Z info: Obfuscated certificate saved to: signed/example1.out.json
 ```
 
+## Version
+
+```
+./index.js --version
+```
+
 ## Test
 
 ```
