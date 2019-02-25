@@ -7,10 +7,18 @@ const { dirSync } = require("tmp");
 const mkdirp = require("mkdirp");
 const { issueCertificate } = require("@govtechsg/open-certificate");
 const { combinedHash, hashToBuffer } = require("./crypto");
+const { logger } = require("../lib/logger");
 
+/**
+ * 
+ * @param {*} undigestedCertDir 
+ * @param {*} digestedCertDir 
+ * @returns {Array} an array containing all the targetHashes of the certs inside undigestedCertDir
+ */
 const digestCertificate = async (undigestedCertDir, digestedCertDir) => {
   const hashArray = [];
   const certFileNames = await certificatesInDirectory(undigestedCertDir);
+  logger.debug(`Digesting certificates: ${certFileNames}`)
   certFileNames.forEach(file => {
     // Read individual certificate
     const certificate = readCert(undigestedCertDir, file);
@@ -71,6 +79,10 @@ const merkleHashmap = leafHashes => {
 
       const nextHash = combinedHash(element1, element2);
 
+      // element1 = left
+      // element2 = right
+      // nextHash = parent
+
       hashMap[element1.toString("hex")] = {
         w: element2.toString("hex"),
         n: nextHash.toString("hex")
@@ -95,12 +107,14 @@ const merkleHashmap = leafHashes => {
 
 const batchIssue = async (inputDir, outputDir) => {
   // Create output dir
+  logger.debug(`Issuing batch with inputDir: ${inputDir}, outputDir: ${outputDir} `)
   mkdirp.sync(outputDir);
 
   // Create intermediate dir
   const { name: intermediateDir, removeCallback } = dirSync({
     unsafeCleanup: true
   });
+  logger.debug(`Created tmp dir at ${intermediateDir}`)
 
   // Phase 1: For each certificate, read content, digest and write to file
   const individualCertificateHashes = await digestCertificate(
@@ -108,7 +122,7 @@ const batchIssue = async (inputDir, outputDir) => {
     intermediateDir
   );
 
-  if (!individualCertificateHashes)
+  if (!individualCertificateHashes || individualCertificateHashes.length === 0)
     throw new Error(`No certificates found in ${inputDir}`);
   if (individualCertificateHashes.length === 1)
     throw new Error(`No need to batch certificate if there is only one`);
