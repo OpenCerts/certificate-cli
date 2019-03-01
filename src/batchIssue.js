@@ -61,6 +61,21 @@ const appendProofToCerts = async (
   return merkleRoot;
 };
 
+
+class BatchMerkleTree {
+  constructor(certificateHashes) {
+    this.leaves = certificateHashes;
+    this.hashMap = merkleHashmap(this.leaves);
+  }
+
+  getSibling(element) {
+    return this.hashMap[element].w;
+  }
+  getParent(element) {
+    return this.hashMap[element].n;
+  }
+}
+
 const merkleHashmap = leafHashes => {
   const hashMap = {};
   const hashArray = [leafHashes];
@@ -148,5 +163,6 @@ module.exports = {
   digestCertificate,
   appendProofToCerts,
   merkleHashmap,
-  batchIssue
+  batchIssue,
+  BatchMerkleTree
 };

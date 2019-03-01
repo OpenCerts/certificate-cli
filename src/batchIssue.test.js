@@ -2,6 +2,7 @@ const proxyquire = require("proxyquire");
 const { hashToBuffer: tb } = require("./crypto");
 const sinon = require("sinon");
 const sampleUndigestedCert = require("../test/fixtures/undigestedCerts/example.0.json");
+const { BatchMerkleTree } = require("./batchIssue");
 
 const readCert = sinon.stub();
 const writeCertToDisk = sinon.stub();
@@ -187,6 +188,86 @@ describe("batchIssue", () => {
       };
 
       expect(hmap).to.deep.equal(expectedHmap);
+    });
+  });
+
+  describe("BatchMerkleTree", () => {
+    it.only("should work", () => {
+      const hashArray = [
+        "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb",
+        "b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510",
+        "0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2",
+        "f1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3",
+        "a8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761"
+      ];
+      const hashArrayBuf = hashArray.map(tb);
+      const hmap = merkleHashmap(hashArrayBuf);
+      const tree = new BatchMerkleTree(hashArrayBuf);
+      const expectedHmap = {
+        "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb": {
+          sibling:
+            "b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510",
+          parent:
+            "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8"
+        },
+        b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510: {
+          sibling:
+            "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb",
+          parent:
+            "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8"
+        },
+        "0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2": {
+          sibling:
+            "f1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3",
+          parent:
+            "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669"
+        },
+        f1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3: {
+          sibling:
+            "0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2",
+          parent:
+            "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669"
+        },
+        "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8": {
+          sibling:
+            "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669",
+          parent:
+            "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf"
+        },
+        d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669: {
+          sibling:
+            "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8",
+          parent:
+            "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf"
+        },
+        "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf": {
+          sibling:
+            "a8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761",
+          parent:
+            "1dd0d2a6ae466d665cb26e1a31f07c57ae5df7d2bc559cd5826d417be9141a5d"
+        },
+        a8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761: {
+          sibling:
+            "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf",
+          parent:
+            "1dd0d2a6ae466d665cb26e1a31f07c57ae5df7d2bc559cd5826d417be9141a5d"
+        }
+      };
+      hashArray.forEach(element => {
+        expect(tree.getSibling(element)).to.equal(
+          expectedHmap[element].sibling
+        );
+        expect(tree.getParent(element)).to.equal(expectedHmap[element].parent);
+      });
+      expect(
+        tree.getSibling(
+          "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb"
+        )
+      ).to.deep.equal(
+        "b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510"
+      );
+
+      console.log(tree.hashMap);
     });
   });
 });
