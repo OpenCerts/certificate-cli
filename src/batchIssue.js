@@ -38,7 +38,7 @@ const appendProofToCerts = async (
     let candidateRoot = certificateHash;
     let nextStep = hashMap[certificateHash];
     while (nextStep) {
-      // nextStep is empty when there is no parent
+      // nextStep will be empty when there is no parent
       proof.push(nextStep.sibling);
       candidateRoot = nextStep.parent;
       nextStep = hashMap[candidateRoot];
