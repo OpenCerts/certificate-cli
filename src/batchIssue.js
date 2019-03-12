@@ -35,17 +35,18 @@ const appendProofToCerts = async (
 
     const certificateHash = certificate.signature.targetHash;
     const proof = [];
-    let root = certificateHash;
+    let candidateRoot = certificateHash;
     let nextStep = hashMap[certificateHash];
     while (nextStep) {
-      proof.push(nextStep.w);
-      root = nextStep.n;
-      nextStep = hashMap[root];
+      // nextStep is empty when there is no parent
+      proof.push(nextStep.sibling);
+      candidateRoot = nextStep.parent;
+      nextStep = hashMap[candidateRoot];
     }
 
     certificate.signature.proof = proof;
-    certificate.signature.merkleRoot = root;
-    if (!merkleRoot) merkleRoot = root;
+    certificate.signature.merkleRoot = candidateRoot;
+    if (!merkleRoot) merkleRoot = candidateRoot;
 
     writeCertToDisk(digestedCertDir, file, certificate);
   });
@@ -72,12 +73,12 @@ const merkleHashmap = leafHashes => {
       const nextHash = combinedHash(element1, element2);
 
       hashMap[element1.toString("hex")] = {
-        w: element2.toString("hex"),
-        n: nextHash.toString("hex")
+        sibling: element2.toString("hex"),
+        parent: nextHash.toString("hex")
       };
       hashMap[element2.toString("hex")] = {
-        w: element1.toString("hex"),
-        n: nextHash.toString("hex")
+        sibling: element1.toString("hex"),
+        parent: nextHash.toString("hex")
       };
 
       hashArray[nextLayerIndex].push(nextHash);
@@ -108,10 +109,8 @@ const batchIssue = async (inputDir, outputDir) => {
     intermediateDir
   );
 
-  if (!individualCertificateHashes)
+  if (!individualCertificateHashes || individualCertificateHashes.length === 0)
     throw new Error(`No certificates found in ${inputDir}`);
-  if (individualCertificateHashes.length === 1)
-    throw new Error(`No need to batch certificate if there is only one`);
 
   // Phase 2: Efficient merkling to build hashmap
   const hashMap = merkleHashmap(individualCertificateHashes);

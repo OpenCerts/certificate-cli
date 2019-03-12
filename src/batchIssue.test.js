@@ -27,10 +27,10 @@ describe("batchIssue", () => {
   describe("appendProofToCerts", () => {
     it("determines the proof for each cert using the hashmap and writes the new cert back", async () => {
       const hashMap = {
-        a: { w: "b", n: "d" },
-        b: { w: "a", n: "d" },
-        c: { w: "d", n: "e" },
-        d: { w: "c", n: "e" }
+        a: { sibling: "b", parent: "d" },
+        b: { sibling: "a", parent: "d" },
+        c: { sibling: "d", parent: "e" },
+        d: { sibling: "c", parent: "e" }
       };
       certificatesInDirectory.returns([
         "file_1.json",
@@ -137,8 +137,8 @@ describe("batchIssue", () => {
     it("returns hashmap for two hashes", () => {
       const hmap = merkleHashmap([tb(h1), tb(h2)]);
       expect(hmap).to.deep.equal({
-        [h1]: { w: h2, n: h12 },
-        [h2]: { w: h1, n: h12 }
+        [h1]: { sibling: h2, parent: h12 },
+        [h2]: { sibling: h1, parent: h12 }
       });
     });
     it("returns hashmap for odd number (5) hashes", () => {
@@ -153,36 +153,52 @@ describe("batchIssue", () => {
       const hmap = merkleHashmap(hashArrayBuf);
       const expectedHmap = {
         "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb": {
-          w: "b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510",
-          n: "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8"
+          sibling:
+            "b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510",
+          parent:
+            "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8"
         },
         b5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510: {
-          w: "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb",
-          n: "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8"
+          sibling:
+            "3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb",
+          parent:
+            "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8"
         },
         "0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2": {
-          w: "f1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3",
-          n: "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669"
+          sibling:
+            "f1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3",
+          parent:
+            "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669"
         },
         f1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3: {
-          w: "0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2",
-          n: "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669"
+          sibling:
+            "0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2",
+          parent:
+            "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669"
         },
         "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8": {
-          w: "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669",
-          n: "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf"
+          sibling:
+            "d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669",
+          parent:
+            "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf"
         },
         d253a52d4cb00de2895e85f2529e2976e6aaaa5c18106b68ab66813e14415669: {
-          w: "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8",
-          n: "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf"
+          sibling:
+            "805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8",
+          parent:
+            "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf"
         },
         "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf": {
-          w: "a8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761",
-          n: "1dd0d2a6ae466d665cb26e1a31f07c57ae5df7d2bc559cd5826d417be9141a5d"
+          sibling:
+            "a8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761",
+          parent:
+            "1dd0d2a6ae466d665cb26e1a31f07c57ae5df7d2bc559cd5826d417be9141a5d"
         },
         a8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761: {
-          w: "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf",
-          n: "1dd0d2a6ae466d665cb26e1a31f07c57ae5df7d2bc559cd5826d417be9141a5d"
+          sibling:
+            "68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf",
+          parent:
+            "1dd0d2a6ae466d665cb26e1a31f07c57ae5df7d2bc559cd5826d417be9141a5d"
         }
       };
 
