@@ -7,14 +7,15 @@ const {
   verifySignature,
   obfuscateFields
 } = require("@govtechsg/open-certificate");
-
-const batchIssue = require("./src/batchIssue");
+const batchVerify = require("./src/batchVerify");
+const { batchIssue } = require("./src/batchIssue");
 const { logger, addConsole } = require("./lib/logger");
+const { version } = require("./package.json");
 
 // Pass argv with $1 and $2 sliced
 const parseArguments = argv =>
   yargs
-    .version("0.2.0")
+    .version(version)
     .usage("Certificate issuing, verification and revocation tool.")
     .strict()
     .epilogue(
@@ -55,6 +56,15 @@ const parseArguments = argv =>
         })
     })
     .command({
+      command: "verify-all [options] <dir>",
+      description: "Verify all certiifcate in a directory",
+      builder: sub =>
+        sub.positional("dir", {
+          description: "Directory with all certificates to verify",
+          normalize: true
+        })
+    })
+    .command({
       command: "batch [options] <raw-dir> <batched-dir>",
       description:
         "Combine a directory of certificates into a certificate batch",
@@ -82,6 +92,15 @@ const batch = async (raw, batched) => {
     .catch(err => {
       logger.error(err);
     });
+};
+
+const verifyAll = async dir => {
+  const verified = await batchVerify(dir);
+  if (verified) {
+    logger.info(`All certificates in ${dir} is verified`);
+  } else {
+    logger.error("At least one certificate failed verification");
+  }
 };
 
 const verify = file => {
@@ -129,6 +148,8 @@ const main = async argv => {
       return batch(args.rawDir, args.batchedDir);
     case "verify":
       return verify(args.file);
+    case "verify-all":
+      return verifyAll(args.dir);
     case "filter":
       return obfuscate(args.source, args.destination, args.fields);
     default:
