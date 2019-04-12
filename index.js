@@ -20,9 +20,10 @@ const parseArguments = argv =>
     .strict()
     .epilogue(
       "The common subcommands you might be interested in are:\n" +
-        "- issue\n" +
+        "- batch\n" +
         "- verify\n" +
-        "- revoke"
+        "- verify-all\n" +
+        "- filter"
     )
     .options({
       "log-level": {
