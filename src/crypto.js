@@ -1,8 +1,8 @@
 const ethereumjsUtil = require("ethereumjs-util");
 
 /*
-* FUNCTIONS TAKEN FROM OPEN_ATTESTATION FRAMEWORK
-*/
+ * FUNCTIONS TAKEN FROM OPEN_ATTESTATION FRAMEWORK
+ */
 
 /**
  * Sorts the given Buffers lexicographically and then concatenates them to form one continuous Buffer
