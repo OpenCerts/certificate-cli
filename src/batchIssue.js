@@ -5,7 +5,7 @@ const {
 } = require("./diskUtils");
 const { dirSync } = require("tmp");
 const mkdirp = require("mkdirp");
-const { issueCertificate } = require("@govtechsg/open-certificate");
+const { issueCertificate } = require("@tradetrust/tradetrust-certificate");
 const { combinedHash, hashToBuffer } = require("./crypto");
 
 const digestCertificate = async (undigestedCertDir, digestedCertDir) => {

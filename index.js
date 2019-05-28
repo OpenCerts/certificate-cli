@@ -6,7 +6,7 @@ const {
   validateSchema,
   verifySignature,
   obfuscateFields
-} = require("@govtechsg/open-certificate");
+} = require("@tradetrust/tradetrust-certificate");
 const batchVerify = require("./src/batchVerify");
 const { batchIssue } = require("./src/batchIssue");
 const { logger, addConsole } = require("./lib/logger");
