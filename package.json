@@ -36,7 +36,6 @@
     "sinon": "^7.2.3"
   },
   "dependencies": {
-    "@tradetrust/tradetrust-attestation": "file:../tradetrust-attestation/tradetrust-tradetrust-attestation-1.0.0.tgz",
     "@tradetrust/tradetrust-certificate": "file:../tradetrust-certificate/tradetrust-tradetrust-certificate-1.0.0.tgz",
     "ethereumjs-util": "^6.0.0",
     "json-schema-faker": "^0.5.0-rc9",
