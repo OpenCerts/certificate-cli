@@ -5,7 +5,7 @@ const {
 } = require("./diskUtils");
 const { dirSync } = require("tmp");
 const mkdirp = require("mkdirp");
-const { issueCertificate } = require("@tradetrust/tradetrust-certificate");
+const { issueDocument } = require("@govtechsg/tradetrust-schema");
 const { combinedHash, hashToBuffer } = require("./crypto");
 
 const digestCertificate = async (undigestedCertDir, digestedCertDir) => {
@@ -15,7 +15,7 @@ const digestCertificate = async (undigestedCertDir, digestedCertDir) => {
     // Read individual certificate
     const certificate = readCert(undigestedCertDir, file);
     // Digest individual certificate
-    const digest = issueCertificate(certificate);
+    const digest = issueDocument(certificate);
     hashArray.push(hashToBuffer(digest.signature.merkleRoot));
     // Write digested certificate to new directory
     writeCertToDisk(digestedCertDir, file, digest);

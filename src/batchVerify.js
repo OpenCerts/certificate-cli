@@ -1,5 +1,5 @@
 const { readCert, certificatesInDirectory } = require("./diskUtils");
-const { verifySignature } = require("@tradetrust/tradetrust-certificate");
+const { verifySignature } = require("@govtechsg/tradetrust-schema");
 const { logger } = require("../lib/logger");
 
 const batchVerify = async undigestedCertDir => {
