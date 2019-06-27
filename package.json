@@ -1,10 +1,10 @@
 {
-  "name": "@govtechsg/certificate-cli",
+  "name": "@govtechsg/tradetrust-cli",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "bin": {
-    "opencert": "./index.js"
+    "tradetrust": "./index.js"
   },
   "scripts": {
     "test": "nyc --reporter=html mocha --timeout 5000 -- ./test/helpers.js  './test/**/*.test.js' './src/**/*.test.js'",

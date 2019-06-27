@@ -16,7 +16,7 @@ const { version } = require("./package.json");
 const parseArguments = argv =>
   yargs
     .version(version)
-    .usage("Certificate issuing, verification and revocation tool.")
+    .usage("Tradetrust document issuing, verification and revocation tool.")
     .strict()
     .epilogue(
       "The common subcommands you might be interested in are:\n" +
