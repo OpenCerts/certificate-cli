@@ -67,8 +67,7 @@ const parseArguments = argv =>
     })
     .command({
       command: "batch [options] <raw-dir> <batched-dir>",
-      description:
-        "Combine a directory of documents into a document batch",
+      description: "Combine a directory of documents into a document batch",
       builder: sub =>
         sub
           .positional("raw-dir", {
@@ -122,8 +121,7 @@ const obfuscate = (input, output, fields) => {
   const documentJson = JSON.parse(fs.readFileSync(input, "utf8"));
   const obfuscatedDocument = obfuscateFields(documentJson, fields);
   const isValid =
-    verifySignature(obfuscatedDocument) &&
-    validateSchema(obfuscatedDocument);
+    verifySignature(obfuscatedDocument) && validateSchema(obfuscatedDocument);
 
   if (!isValid) {
     logger.error(
