@@ -1,13 +1,13 @@
-const { readCert, certificatesInDirectory } = require("./diskUtils");
+const { readCert, documentsInDirectory } = require("./diskUtils");
 const { verifySignature } = require("@govtechsg/tradetrust-schema");
 const { logger } = require("../lib/logger");
 
 const batchVerify = async undigestedCertDir => {
-  const certFileNames = await certificatesInDirectory(undigestedCertDir);
+  const certFileNames = await documentsInDirectory(undigestedCertDir);
   let allVerified = true;
   certFileNames.forEach(file => {
-    const certificate = readCert(undigestedCertDir, file);
-    const verified = verifySignature(certificate);
+    const document = readCert(undigestedCertDir, file);
+    const verified = verifySignature(document);
     allVerified = allVerified && verified;
     if (verified) {
       logger.debug(`${file}: Verified`);

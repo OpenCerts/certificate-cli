@@ -5,14 +5,14 @@
     "type": "IFRAME_RENDERING",
     "url": "http://localhost:3000/rederer"
   },
-  "description": "A Certificate",
+  "description": "A Document",
   "issuedOn": "2018-08-30T00:00:00+08:00",
-  "certificateType": "Certificate of Origin",
+  "documentType": "Certificate of Origin",
   "issuers": [{
       "name": "DEMO STORE",
         "address": "Changi Singapore -123456",
       "country": "Singapore",
-      "certificateStore": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
+      "documentStore": "0x9178F546D3FF57D7A6352bD61B80cCCD46199C2d"
   }],
   "recipient": {
       "name": "Reciepient Name",

@@ -1,10 +1,10 @@
 ## Selective Privacy
 
-Storing more data on the certificate may mean the user is exposing too much information than he want to other parties. Say that a student does not want to share his transcript, he will not be able to verify his entire certificate using the current blockcert implementation. 
+Storing more data on the document may mean the user is exposing too much information than he want to other parties. Say that a student does not want to share his transcript, he will not be able to verify his entire document using the current blockcert implementation. 
 
-Suggestion is to hash each line of the canoncalised version of the certificate (less the signature) before hashing all the results. This allow the certificate to be validated even without the original content of the certificate. 
+Suggestion is to hash each line of the canoncalised version of the document (less the signature) before hashing all the results. This allow the document to be validated even without the original content of the document. 
 
-**Sample Certificate** 
+**Sample Document** 
 
 ```
 {
@@ -127,7 +127,7 @@ _:c14n3 <https://w3id.org/openbadges#identityHash> "alice@example.org" .
 08747f48db1ed91a532f6040ff42b7e1af0ce684c8f7e031f9c7287fc9ea8bb8
 ```
 
-**Sample Private Certificate**
+**Sample Private Document**
 
 ```
 {
@@ -174,7 +174,7 @@ _:c14n3 <https://w3id.org/openbadges#identityHash> "alice@example.org" .
   '28cea87b87aab3bce2d24fef1ad7f0a50e7beb117f4122dd75eceafcad93cce3'
 ]
 ```
-> All evidence information are now hidden in the hash and the new certificate can still be validated on the blockchain. 
+> All evidence information are now hidden in the hash and the new document can still be validated on the blockchain. 
 
 
 **Suggested Improvements to Blockcert Schema**

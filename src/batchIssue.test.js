@@ -5,14 +5,14 @@ const sampleUndigestedCert = require("../test/fixtures/undigestedCerts/example.0
 
 const readCert = sinon.stub();
 const writeCertToDisk = sinon.stub();
-const certificatesInDirectory = sinon.stub();
-const { digestCertificate, appendProofToCerts, merkleHashmap } = proxyquire(
+const documentsInDirectory = sinon.stub();
+const { digestDocument, appendProofToCerts, merkleHashmap } = proxyquire(
   "./batchIssue",
   {
     "./diskUtils": {
       readCert,
       writeCertToDisk,
-      certificatesInDirectory
+      documentsInDirectory
     }
   }
 );
@@ -21,7 +21,7 @@ describe("batchIssue", () => {
   beforeEach(() => {
     readCert.reset();
     writeCertToDisk.reset();
-    certificatesInDirectory.reset();
+    documentsInDirectory.reset();
   });
 
   describe("appendProofToCerts", () => {
@@ -32,7 +32,7 @@ describe("batchIssue", () => {
         c: { sibling: "d", parent: "e" },
         d: { sibling: "c", parent: "e" }
       };
-      certificatesInDirectory.returns([
+      documentsInDirectory.returns([
         "file_1.json",
         "file_2.json",
         "file_3.json"
@@ -93,15 +93,15 @@ describe("batchIssue", () => {
     });
   });
 
-  describe("digestCertificate", () => {
-    it("digest all certificates, writes the digested certs to output_dir and returns array of all hashes", async () => {
-      certificatesInDirectory.returns([
+  describe("digestDocument", () => {
+    it("digest all documents, writes the digested certs to output_dir and returns array of all hashes", async () => {
+      documentsInDirectory.returns([
         "file_1.json",
         "file_2.json",
         "file_3.json"
       ]);
       readCert.returns(sampleUndigestedCert);
-      const hashArray = await digestCertificate("input_dir", "output_dir");
+      const hashArray = await digestDocument("input_dir", "output_dir");
 
       expect(hashArray.length).to.be.eql(3);
 

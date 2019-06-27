@@ -35,24 +35,24 @@ const parseArguments = argv =>
     })
     .command({
       command: "filter <source> <destination> [fields..]",
-      description: "Obfuscate fields in the certificate",
+      description: "Obfuscate fields in the document",
       builder: sub =>
         sub
           .positional("source", {
-            description: "Source signed certificate filename",
+            description: "Source signed document filename",
             normalize: true
           })
           .positional("destination", {
-            description: "Destination to write obfuscated certificate file to",
+            description: "Destination to write obfuscated document file to",
             normalize: true
           })
     })
     .command({
       command: "verify [options] <file>",
-      description: "Verify the certificate",
+      description: "Verify the document",
       builder: sub =>
         sub.positional("file", {
-          description: "Certificate file to verify",
+          description: "Document file to verify",
           normalize: true
         })
     })
@@ -61,23 +61,23 @@ const parseArguments = argv =>
       description: "Verify all certiifcate in a directory",
       builder: sub =>
         sub.positional("dir", {
-          description: "Directory with all certificates to verify",
+          description: "Directory with all documents to verify",
           normalize: true
         })
     })
     .command({
       command: "batch [options] <raw-dir> <batched-dir>",
       description:
-        "Combine a directory of certificates into a certificate batch",
+        "Combine a directory of documents into a document batch",
       builder: sub =>
         sub
           .positional("raw-dir", {
             description:
-              "Directory containing the raw unissued and unsigned certificates",
+              "Directory containing the raw unissued and unsigned documents",
             normalize: true
           })
           .positional("batched-dir", {
-            description: "Directory to output the batched certificates to.",
+            description: "Directory to output the batched documents to.",
             normalize: true
           })
     })
@@ -87,7 +87,7 @@ const batch = async (raw, batched) => {
   mkdirp.sync(batched);
   return batchIssue(raw, batched)
     .then(merkleRoot => {
-      logger.info(`Batch Certificate Root: 0x${merkleRoot}`);
+      logger.info(`Batch Document Root: 0x${merkleRoot}`);
       return `${merkleRoot}`;
     })
     .catch(err => {
@@ -98,40 +98,40 @@ const batch = async (raw, batched) => {
 const verifyAll = async dir => {
   const verified = await batchVerify(dir);
   if (verified) {
-    logger.info(`All certificates in ${dir} is verified`);
+    logger.info(`All documents in ${dir} is verified`);
   } else {
-    logger.error("At least one certificate failed verification");
+    logger.error("At least one document failed verification");
   }
 };
 
 const verify = file => {
-  const certificateJson = JSON.parse(fs.readFileSync(file, "utf8"));
-  if (verifySignature(certificateJson) && validateSchema(certificateJson)) {
-    logger.info("Certificate's signature is valid!");
+  const documentJson = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (verifySignature(documentJson) && validateSchema(documentJson)) {
+    logger.info("Document's signature is valid!");
     logger.warn(
-      "Warning: Please verify this certificate on the blockchain with the issuer's certificate store."
+      "Warning: Please verify this document on the blockchain with the issuer's document store."
     );
   } else {
-    logger.error("Certificate's signature is invalid");
+    logger.error("Document's signature is invalid");
   }
 
   return true;
 };
 
 const obfuscate = (input, output, fields) => {
-  const certificateJson = JSON.parse(fs.readFileSync(input, "utf8"));
-  const obfuscatedCertificate = obfuscateFields(certificateJson, fields);
+  const documentJson = JSON.parse(fs.readFileSync(input, "utf8"));
+  const obfuscatedDocument = obfuscateFields(documentJson, fields);
   const isValid =
-    verifySignature(obfuscatedCertificate) &&
-    validateSchema(obfuscatedCertificate);
+    verifySignature(obfuscatedDocument) &&
+    validateSchema(obfuscatedDocument);
 
   if (!isValid) {
     logger.error(
       "Privacy filtering caused document to fail schema or signature validation"
     );
   } else {
-    fs.writeFileSync(output, JSON.stringify(obfuscatedCertificate, null, 2));
-    logger.info(`Obfuscated certificate saved to: ${output}`);
+    fs.writeFileSync(output, JSON.stringify(obfuscatedDocument, null, 2));
+    logger.info(`Obfuscated document saved to: ${output}`);
   }
 };
 

@@ -17,20 +17,20 @@ function isOpenCertFileExtension(filename) {
   );
 }
 
-const certificatesInDirectory = async dir => {
+const documentsInDirectory = async dir => {
   const items = await readdir(dir);
   return filter(items, isOpenCertFileExtension);
 };
 
-function writeCertToDisk(destinationDir, filename, certificate) {
+function writeCertToDisk(destinationDir, filename, document) {
   fs.writeFileSync(
     path.join(path.resolve(destinationDir), filename),
-    JSON.stringify(certificate, null, 2)
+    JSON.stringify(document, null, 2)
   );
 }
 
 module.exports = {
-  certificatesInDirectory,
+  documentsInDirectory,
   writeCertToDisk,
   readCert,
   readdir

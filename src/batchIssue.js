@@ -1,23 +1,23 @@
 const {
   readCert,
   writeCertToDisk,
-  certificatesInDirectory
+  documentsInDirectory
 } = require("./diskUtils");
 const { dirSync } = require("tmp");
 const mkdirp = require("mkdirp");
 const { issueDocument } = require("@govtechsg/tradetrust-schema");
 const { combinedHash, hashToBuffer } = require("./crypto");
 
-const digestCertificate = async (undigestedCertDir, digestedCertDir) => {
+const digestDocument = async (undigestedCertDir, digestedCertDir) => {
   const hashArray = [];
-  const certFileNames = await certificatesInDirectory(undigestedCertDir);
+  const certFileNames = await documentsInDirectory(undigestedCertDir);
   certFileNames.forEach(file => {
-    // Read individual certificate
-    const certificate = readCert(undigestedCertDir, file);
-    // Digest individual certificate
-    const digest = issueDocument(certificate);
+    // Read individual document
+    const document = readCert(undigestedCertDir, file);
+    // Digest individual document
+    const digest = issueDocument(document);
     hashArray.push(hashToBuffer(digest.signature.merkleRoot));
-    // Write digested certificate to new directory
+    // Write digested document to new directory
     writeCertToDisk(digestedCertDir, file, digest);
   });
   return hashArray;
@@ -28,15 +28,15 @@ const appendProofToCerts = async (
   digestedCertDir,
   hashMap
 ) => {
-  const certFileNames = await certificatesInDirectory(intermediateDir);
+  const certFileNames = await documentsInDirectory(intermediateDir);
   let merkleRoot;
   certFileNames.forEach(file => {
-    const certificate = readCert(intermediateDir, file);
+    const document = readCert(intermediateDir, file);
 
-    const certificateHash = certificate.signature.targetHash;
+    const documentHash = document.signature.targetHash;
     const proof = [];
-    let candidateRoot = certificateHash;
-    let nextStep = hashMap[certificateHash];
+    let candidateRoot = documentHash;
+    let nextStep = hashMap[documentHash];
     while (nextStep) {
       // nextStep will be empty when there is no parent
       proof.push(nextStep.sibling);
@@ -44,11 +44,11 @@ const appendProofToCerts = async (
       nextStep = hashMap[candidateRoot];
     }
 
-    certificate.signature.proof = proof;
-    certificate.signature.merkleRoot = candidateRoot;
+    document.signature.proof = proof;
+    document.signature.merkleRoot = candidateRoot;
     if (!merkleRoot) merkleRoot = candidateRoot;
 
-    writeCertToDisk(digestedCertDir, file, certificate);
+    writeCertToDisk(digestedCertDir, file, document);
   });
 
   return merkleRoot;
@@ -103,19 +103,19 @@ const batchIssue = async (inputDir, outputDir) => {
     unsafeCleanup: true
   });
 
-  // Phase 1: For each certificate, read content, digest and write to file
-  const individualCertificateHashes = await digestCertificate(
+  // Phase 1: For each document, read content, digest and write to file
+  const individualDocumentHashes = await digestDocument(
     inputDir,
     intermediateDir
   );
 
-  if (!individualCertificateHashes || individualCertificateHashes.length === 0)
-    throw new Error(`No certificates found in ${inputDir}`);
+  if (!individualDocumentHashes || individualDocumentHashes.length === 0)
+    throw new Error(`No documents found in ${inputDir}`);
 
   // Phase 2: Efficient merkling to build hashmap
-  const hashMap = merkleHashmap(individualCertificateHashes);
+  const hashMap = merkleHashmap(individualDocumentHashes);
 
-  // Phase 3: Add proofs to signedCertificates
+  // Phase 3: Add proofs to signedDocuments
   const merkleRoot = await appendProofToCerts(
     intermediateDir,
     outputDir,
@@ -130,7 +130,7 @@ const batchIssue = async (inputDir, outputDir) => {
 };
 
 module.exports = {
-  digestCertificate,
+  digestDocument,
   appendProofToCerts,
   merkleHashmap,
   batchIssue
