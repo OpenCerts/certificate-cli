@@ -8,6 +8,7 @@ const batchVerify = async undigestedCertDir => {
   certFileNames.forEach(file => {
     const certificate = readCert(undigestedCertDir, file);
     const verified = verifySignature(certificate);
+    // TODO validateSchema(certificateJson, schemaVersion)
     allVerified = allVerified && verified;
     if (verified) {
       logger.debug(`${file}: Verified`);

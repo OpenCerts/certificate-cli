@@ -1,7 +1,7 @@
 const proxyquire = require("proxyquire");
 const { hashToBuffer: tb } = require("./crypto");
 const sinon = require("sinon");
-const sampleUndigestedCert = require("../test/fixtures/undigestedCerts/example.0.json");
+const sampleUndigestedCert = require("../test/fixtures/schema/2.0/1.json");
 
 const readCert = sinon.stub();
 const writeCertToDisk = sinon.stub();
