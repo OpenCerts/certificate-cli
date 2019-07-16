@@ -1,16 +1,20 @@
 const { readCert, certificatesInDirectory } = require("./diskUtils");
-const { verifySignature } = require("@govtechsg/open-certificate");
+const {
+  verifySignature,
+  validateSchema
+} = require("@govtechsg/open-certificate");
 const { logger } = require("../lib/logger");
 
-const batchVerify = async undigestedCertDir => {
+const batchVerify = async (undigestedCertDir, schemaVersion) => {
   const certFileNames = await certificatesInDirectory(undigestedCertDir);
   let allVerified = true;
   certFileNames.forEach(file => {
     const certificate = readCert(undigestedCertDir, file);
-    const verified = verifySignature(certificate);
-    // TODO validateSchema(certificateJson, schemaVersion)
-    allVerified = allVerified && verified;
-    if (verified) {
+    const validSignature = verifySignature(certificate);
+    const validSchema = validateSchema(certificate, schemaVersion);
+    const isValid = validSchema && validSignature;
+    allVerified = allVerified && isValid;
+    if (isValid) {
       logger.debug(`${file}: Verified`);
     } else {
       logger.error(`${file}: ======= VERIFICATION FAILED =======`);
