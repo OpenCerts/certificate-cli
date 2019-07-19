@@ -8,14 +8,18 @@ const mkdirp = require("mkdirp");
 const { issueCertificate } = require("@govtechsg/open-certificate");
 const { combinedHash, hashToBuffer } = require("./crypto");
 
-const digestCertificate = async (undigestedCertDir, digestedCertDir) => {
+const digestCertificate = async (
+  undigestedCertDir,
+  digestedCertDir,
+  schemaVersion
+) => {
   const hashArray = [];
   const certFileNames = await certificatesInDirectory(undigestedCertDir);
   certFileNames.forEach(file => {
     // Read individual certificate
     const certificate = readCert(undigestedCertDir, file);
     // Digest individual certificate
-    const digest = issueCertificate(certificate);
+    const digest = issueCertificate(certificate, schemaVersion);
     hashArray.push(hashToBuffer(digest.signature.merkleRoot));
     // Write digested certificate to new directory
     writeCertToDisk(digestedCertDir, file, digest);
@@ -94,7 +98,7 @@ const merkleHashmap = leafHashes => {
   return hashMap;
 };
 
-const batchIssue = async (inputDir, outputDir) => {
+const batchIssue = async (inputDir, outputDir, schemaVersion) => {
   // Create output dir
   mkdirp.sync(outputDir);
 
@@ -106,7 +110,8 @@ const batchIssue = async (inputDir, outputDir) => {
   // Phase 1: For each certificate, read content, digest and write to file
   const individualCertificateHashes = await digestCertificate(
     inputDir,
-    intermediateDir
+    intermediateDir,
+    schemaVersion
   );
 
   if (!individualCertificateHashes || individualCertificateHashes.length === 0)

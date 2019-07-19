@@ -2,7 +2,7 @@
   "id": "SERIAL-2018-08-01-112",
   "$template": "BLOCKCHAIN-ACADEMY-2018-001",
   "issuedOn": "2018-08-01T00:00:00+08:00",
-  "expiresOn": "2118-08-01T00:00:00+08:00",
+  "expiredOn": "2118-08-01T00:00:00+08:00",
   "name": "Master of Blockchain",
   "admissionDate": "2017-08-01T00:00:00+08:00",
   "graduationDate": "2018-08-01T00:00:00+08:00",
@@ -13,7 +13,7 @@
       "url": "https://blockchainacademy.com",
       "email": "registrar@blockchainacademy.com",
       "certificateStore": "0xd9580260be45c3c0c2fb259a82f219b513054012"
-    }, 
+    },
     {
       "name": "School of Crypto-economics",
       "url": "https://ceschool.sg",

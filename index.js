@@ -5,7 +5,9 @@ const yargs = require("yargs");
 const {
   validateSchema,
   verifySignature,
-  obfuscateFields
+  obfuscateFields,
+  schemas,
+  defaultSchema
 } = require("@govtechsg/open-certificate");
 const batchVerify = require("./src/batchVerify");
 const { batchIssue } = require("./src/batchIssue");
@@ -31,6 +33,12 @@ const parseArguments = argv =>
         default: "info",
         description: "Set the log level",
         global: true
+      },
+      schema: {
+        choices: Object.keys(schemas),
+        description: "Set the schema to use",
+        global: true,
+        type: "string"
       }
     })
     .command({
@@ -83,31 +91,35 @@ const parseArguments = argv =>
     })
     .parse(argv);
 
-const batch = async (raw, batched) => {
+const batch = async (raw, batched, schemaVersion) => {
   mkdirp.sync(batched);
-  return batchIssue(raw, batched)
+  return batchIssue(raw, batched, schemaVersion)
     .then(merkleRoot => {
-      logger.info(`Batch Certificate Root: 0x${merkleRoot}`);
-      return `${merkleRoot}`;
+      logger.debug(`Batch Certificate Root: 0x${merkleRoot}`);
+      return `0x${merkleRoot}`;
     })
     .catch(err => {
       logger.error(err);
     });
 };
 
-const verifyAll = async dir => {
-  const verified = await batchVerify(dir);
+const verifyAll = async (dir, schemaVersion) => {
+  const verified = await batchVerify(dir, schemaVersion);
   if (verified) {
-    logger.info(`All certificates in ${dir} is verified`);
-  } else {
-    logger.error("At least one certificate failed verification");
+    logger.debug(`All certificates in ${dir} is verified`);
+    return true;
   }
+  logger.error("At least one certificate failed verification");
+  return false;
 };
 
-const verify = file => {
+const verify = (file, schemaVersion) => {
   const certificateJson = JSON.parse(fs.readFileSync(file, "utf8"));
-  if (verifySignature(certificateJson) && validateSchema(certificateJson)) {
-    logger.info("Certificate's signature is valid!");
+  if (
+    verifySignature(certificateJson) &&
+    validateSchema(certificateJson, schemaVersion)
+  ) {
+    logger.debug("Certificate's signature is valid!");
     logger.warn(
       "Warning: Please verify this certificate on the blockchain with the issuer's certificate store."
     );
@@ -131,7 +143,7 @@ const obfuscate = (input, output, fields) => {
     );
   } else {
     fs.writeFileSync(output, JSON.stringify(obfuscatedCertificate, null, 2));
-    logger.info(`Obfuscated certificate saved to: ${output}`);
+    logger.debug(`Obfuscated certificate saved to: ${output}`);
   }
 };
 
@@ -140,17 +152,19 @@ const main = async argv => {
   addConsole(args.logLevel);
   logger.debug(`Parsed args: ${JSON.stringify(args)}`);
 
+  const schemaKey = args.schema ? schemas[args.schema].$id : defaultSchema.$id;
+
   if (args._.length !== 1) {
     yargs.showHelp("log");
     return false;
   }
   switch (args._[0]) {
     case "batch":
-      return batch(args.rawDir, args.batchedDir);
+      return batch(args.rawDir, args.batchedDir, schemaKey);
     case "verify":
-      return verify(args.file);
+      return verify(args.file, schemaKey);
     case "verify-all":
-      return verifyAll(args.dir);
+      return verifyAll(args.dir, schemaKey);
     case "filter":
       return obfuscate(args.source, args.destination, args.fields);
     default:
@@ -160,7 +174,9 @@ const main = async argv => {
 
 if (typeof require !== "undefined" && require.main === module) {
   main(process.argv.slice(2))
-    .then(() => {
+    .then(res => {
+      // eslint-disable-next-line no-console
+      if (res) console.log(res);
       process.exit(0);
     })
     .catch(err => {
