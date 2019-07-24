@@ -2,8 +2,42 @@
 
 ## Setup
 
+To install the command line tool globally, run the following command:
+
 ```bash
-npm install
+npm i -g @govtechsg/certificate-cli
+```
+
+The CLI will now be available in your terminal:
+
+```bash
+opencert
+
+Certificate issuing, verification and revocation tool.
+
+Commands:
+  opencert filter <source> <destination>    Obfuscate fields in the certificate
+  [fields..]
+  opencert verify [options] <file>          Verify the certificate
+  opencert verify-all [options] <dir>       Verify all certiifcate in a
+                                            directory
+  opencert batch [options] <raw-dir>        Combine a directory of certificates
+  <batched-dir>                             into a certificate batch
+
+Options:
+  --help       Show help                                               [boolean]
+  --version    Show version number                                     [boolean]
+  --log-level  Set the log level
+       [choices: "error", "warn", "info", "verbose", "debug", "silly"] [default:
+                                                                         "info"]
+  --schema     Set the schema to use
+             [string] [choices: "1.0", "1.1", "1.2", "1.3", "1.4", "1.5", "2.0"]
+
+The common subcommands you might be interested in are:
+- batch
+- verify
+- verify-all
+- filter
 ```
 
 ## Batching Certificates
