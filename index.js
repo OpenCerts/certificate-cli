@@ -6,8 +6,7 @@ const {
   validateSchema,
   verifySignature,
   obfuscateFields,
-  schemas,
-  defaultSchema
+  schemas
 } = require("@govtechsg/open-certificate");
 const batchVerify = require("./src/batchVerify");
 const { batchIssue } = require("./src/batchIssue");
