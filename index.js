@@ -37,6 +37,7 @@ const parseArguments = argv =>
       schema: {
         choices: Object.keys(schemas),
         description: "Set the schema to use",
+        default: Object.keys(schemas)[Object.keys(schemas).length - 1],
         global: true,
         type: "string"
       }
@@ -152,7 +153,7 @@ const main = async argv => {
   addConsole(args.logLevel);
   logger.debug(`Parsed args: ${JSON.stringify(args)}`);
 
-  const schemaKey = args.schema ? schemas[args.schema].$id : defaultSchema.$id;
+  const selectedSchema = schemas[args.schema];
 
   if (args._.length !== 1) {
     yargs.showHelp("log");
@@ -160,11 +161,11 @@ const main = async argv => {
   }
   switch (args._[0]) {
     case "batch":
-      return batch(args.rawDir, args.batchedDir, schemaKey);
+      return batch(args.rawDir, args.batchedDir, selectedSchema);
     case "verify":
-      return verify(args.file, schemaKey);
+      return verify(args.file, selectedSchema);
     case "verify-all":
-      return verifyAll(args.dir, schemaKey);
+      return verifyAll(args.dir, selectedSchema);
     case "filter":
       return obfuscate(args.source, args.destination, args.fields);
     default:
