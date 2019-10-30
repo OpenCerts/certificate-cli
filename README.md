@@ -6,6 +6,10 @@
 npm install
 ```
 
+### Windows
+
+For Windows you need to set up the toolchain for node-gyp before installing this repository, follow the instructions in https://github.com/nodejs/node-gyp#on-windows.
+
 ## Batching Certificates
 
 This command process all certificates in the input directory and issue all of them in a single
