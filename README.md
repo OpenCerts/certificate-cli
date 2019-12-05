@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-npm install
+npm install -g @govtechsg/certificate-cli
 ```
 
 ### Windows
