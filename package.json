@@ -45,7 +45,7 @@
     "semantic-release": "^15.13.18",
     "tmp": "^0.0.33",
     "winston": "^3.0.0-rc1",
-    "yargs": "^11.0.0"
+    "yargs": "^15.1.0"
   },
   "publishConfig": {
     "access": "public"
