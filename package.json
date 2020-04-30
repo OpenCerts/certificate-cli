@@ -43,7 +43,7 @@
     "mkdirp": "^0.5.1",
     "proxyquire": "^2.1.0",
     "semantic-release": "^15.13.18",
-    "tmp": "^0.0.33",
+    "tmp": "^0.2.1",
     "winston": "^3.0.0-rc1",
     "yargs": "^11.0.0"
   },
