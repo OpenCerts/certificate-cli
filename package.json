@@ -33,7 +33,7 @@
     "mocha": "^4.1.0",
     "nyc": "^13.3.0",
     "prettier": "^1.10.2",
-    "sinon": "^7.2.3"
+    "sinon": "^9.2.0"
   },
   "dependencies": {
     "@govtechsg/open-certificate": "2.0.17",
