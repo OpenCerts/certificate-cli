@@ -1,3 +1,9 @@
+# This package has been deprecated
+If you need to:
+- wrap/issue/obfuscate/ verify(cli) document, use https://github.com/Open-Attestation/open-attestation-cli
+- verify (programmatically) v2 document (only), use https://github.com/Open-Attestation/oa-verify
+- verify (programmatically) v1 and v2 documents, use https://github.com/OpenCerts/verify/
+
 # Certificate CLI tool
 
 ## Setup
